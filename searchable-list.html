@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Searchable List</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f2f4f7;
+      color: #1a1a2e;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #1a1a2e;
+      color: #fff;
+      padding: 20px 16px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    header h1 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      letter-spacing: 0.3px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    input[type="text"], select {
+      flex: 1;
+      min-width: 140px;
+      padding: 10px 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      background: #2e2e4a;
+      color: #fff;
+      outline: none;
+    }
+
+    input[type="text"]::placeholder { color: #888aaa; }
+
+    select option { background: #2e2e4a; }
+
+    #results-count {
+      font-size: 12px;
+      color: #888aaa;
+      padding: 8px 4px 0;
+    }
+
+    .list {
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 14px 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .card-left { flex: 1; }
+
+    .card-name {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+
+    .card-detail {
+      font-size: 13px;
+      color: #555;
+    }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 20px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .badge-electrical { background: #e8f0fe; color: #1a56db; }
+    .badge-mechanical { background: #fef3c7; color: #92400e; }
+    .badge-plumbing    { background: #d1fae5; color: #065f46; }
+    .badge-controls    { background: #ede9fe; color: #5b21b6; }
+
+    .empty {
+      text-align: center;
+      color: #999;
+      padding: 48px 16px;
+      font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Equipment List</h1>
+  <div class="controls">
+    <input type="text" id="search" placeholder="Search by name or ID..." />
+    <select id="filter">
+      <option value="">All Categories</option>
+      <option value="Electrical">Electrical</option>
+      <option value="Mechanical">Mechanical</option>
+      <option value="Plumbing">Plumbing</option>
+      <option value="Controls">Controls</option>
+    </select>
+  </div>
+  <div id="results-count"></div>
+</header>
+
+<div class="list" id="list"></div>
+
+<script>
+  // ─── YOUR DATA GOES HERE ───────────────────────────────────────────────────
+  // Replace this array with your actual entries.
+  // Each object can have whatever fields you need.
+  const DATA = [
+    { id: "E-001", name: "Main Distribution Panel",   category: "Electrical",  location: "Room 101" },
+    { id: "E-002", name: "UPS Unit A",                category: "Electrical",  location: "Room 102" },
+    { id: "E-003", name: "Transfer Switch",           category: "Electrical",  location: "Utility A" },
+    { id: "E-004", name: "Generator #1",              category: "Electrical",  location: "Exterior Pad" },
+    { id: "E-005", name: "PDU Rack 3",                category: "Electrical",  location: "Data Hall" },
+    { id: "M-001", name: "AHU-1",                     category: "Mechanical",  location: "Roof" },
+    { id: "M-002", name: "Chiller Unit A",            category: "Mechanical",  location: "Mechanical Rm" },
+    { id: "M-003", name: "Cooling Tower #2",          category: "Mechanical",  location: "Exterior" },
+    { id: "M-004", name: "CRAC Unit 4",               category: "Mechanical",  location: "Data Hall" },
+    { id: "M-005", name: "Exhaust Fan EF-3",          category: "Mechanical",  location: "Room 204" },
+    { id: "P-001", name: "Chilled Water Pump A",      category: "Plumbing",    location: "Mechanical Rm" },
+    { id: "P-002", name: "Condenser Water Pump B",    category: "Plumbing",    location: "Mechanical Rm" },
+    { id: "P-003", name: "Backflow Preventer",        category: "Plumbing",    location: "Utility B" },
+    { id: "C-001", name: "BMS Controller Node 1",     category: "Controls",    location: "IDF Closet" },
+    { id: "C-002", name: "Sensor Array Zone 3",       category: "Controls",    location: "Data Hall" },
+    { id: "C-003", name: "EPMS Monitor",              category: "Controls",    location: "Room 101" },
+  ];
+  // ──────────────────────────────────────────────────────────────────────────
+
+  const categoryClass = {
+    Electrical: "badge-electrical",
+    Mechanical: "badge-mechanical",
+    Plumbing:   "badge-plumbing",
+    Controls:   "badge-controls",
+  };
+
+  const listEl       = document.getElementById("list");
+  const searchEl     = document.getElementById("search");
+  const filterEl     = document.getElementById("filter");
+  const countEl      = document.getElementById("results-count");
+
+  function render() {
+    const query    = searchEl.value.toLowerCase().trim();
+    const category = filterEl.value;
+
+    const filtered = DATA.filter(item => {
+      const matchesSearch =
+        !query ||
+        item.name.toLowerCase().includes(query) ||
+        item.id.toLowerCase().includes(query) ||
+        item.location.toLowerCase().includes(query);
+      const matchesCategory = !category || item.category === category;
+      return matchesSearch && matchesCategory;
+    });
+
+    countEl.textContent = `${filtered.length} of ${DATA.length} results`;
+
+    if (filtered.length === 0) {
+      listEl.innerHTML = `<div class="empty">No results found.</div>`;
+      return;
+    }
+
+    listEl.innerHTML = filtered.map(item => `
+      <div class="card">
+        <div class="card-left">
+          <div class="card-name">${item.name}</div>
+          <div class="card-detail">${item.id} &middot; ${item.location}</div>
+        </div>
+        <span class="badge ${categoryClass[item.category] || ''}">${item.category}</span>
+      </div>
+    `).join("");
+  }
+
+  searchEl.addEventListener("input", render);
+  filterEl.addEventListener("change", render);
+
+  render();
+</script>
+
+</body>
+</html>
