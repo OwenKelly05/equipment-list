@@ -744,14 +744,29 @@
 
     document.getElementById("toggle-select-btn").textContent = "Deselect All";
 
-    document.getElementById("label-list").innerHTML = labels.map((l, i) => `
+    // Detect duplicate source+dest+system combos within this packet
+    const comboCounts = {};
+    labels.forEach(l => {
+      const key = `${l.source}|${l.dest}|${l.system}`;
+      comboCounts[key] = (comboCounts[key] || 0) + 1;
+    });
+
+    document.getElementById("label-list").innerHTML = labels.map((l, i) => {
+      const key       = `${l.source}|${l.dest}|${l.system}`;
+      const isDup     = comboCounts[key] > 1;
+      const sysBadge  = l.system ? `<span class="badge ${badgeClass[l.system] || ""}" style="margin-top:4px;display:inline-block">${l.system}</span>` : "";
+      const srctermEl = isDup && l.srcterm ? `<div style="font-size:11px;color:#6366f1;margin-top:2px;word-break:break-word">${l.srcterm}</div>` : "";
+      return `
       <label class="label-item">
-        <input type="checkbox" id="lbl-${i}" value="${(l.source||"") + " → " + (l.dest||"")}" checked />
+        <input type="checkbox" id="lbl-${i}" value="${(l.source||"") + " → " + (l.dest||"")} [${l.srcterm || l.system || ""}]" checked />
         <div class="label-item-text">
           <div class="label-source">${l.source || "–"}</div>
           <div class="label-dest">${l.dest || "–"}</div>
+          ${srctermEl}
+          ${sysBadge}
         </div>
-      </label>`).join("");
+      </label>`;
+    }).join("");
 
     const btn = document.getElementById("btn-action");
     btn.textContent = co ? "Check In" : "Check Out";
