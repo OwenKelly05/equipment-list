@@ -371,8 +371,8 @@
     return res.json();
   }
 
-  async function fetchAllZones() {
-    const results = await Promise.all(ZONES.map(z => apiFetch({ action: "getEquipment", zone: z })));
+  async function fetchAllZones(nocache) {
+    const results = await Promise.all(ZONES.map(z => apiFetch({ action: "getEquipment", zone: z, ...(nocache ? { nocache: "1" } : {}) })));
     const data = {};
     ZONES.forEach((z, i) => data[z] = results[i].data || []);
     return data;
@@ -404,7 +404,7 @@
     const btn = document.getElementById("refresh-btn");
     btn.classList.add("spinning");
     try {
-      const [zoneData, coRes] = await Promise.all([fetchAllZones(), apiFetch({ action: "getCheckouts" })]);
+      const [zoneData, coRes] = await Promise.all([fetchAllZones(true), apiFetch({ action: "getCheckouts" })]);
       allZoneData   = zoneData;
       checkoutsData = coRes.data || [];
       saveCache(zoneData);
