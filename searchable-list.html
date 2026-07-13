@@ -17,7 +17,6 @@
     .view { display: none; }
     .view.active { display: block; }
 
-    /* ── Header ── */
     header {
       background: #1a1a2e;
       color: #fff;
@@ -28,558 +27,228 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.25);
     }
 
-    .header-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    header h1 { font-size: 17px; font-weight: 700; }
+    .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    header h1   { font-size: 17px; font-weight: 700; }
     .header-right { display: flex; align-items: center; gap: 8px; }
 
     .history-btn, .refresh-btn {
-      background: #2e2e4a;
-      border: none;
-      color: #aaa;
-      padding: 7px 12px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
+      background: #2e2e4a; border: none; color: #aaa;
+      padding: 7px 12px; border-radius: 8px;
+      font-size: 13px; font-weight: 600; cursor: pointer;
     }
-
     .refresh-btn { padding: 7px 10px; font-size: 15px; }
     .refresh-btn.spinning { animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── Zone toggle ── */
-    .zone-toggle {
-      display: flex;
-      border-radius: 8px;
-      overflow: hidden;
-      margin-bottom: 8px;
-    }
-
+    .zone-toggle { display: flex; border-radius: 8px; overflow: hidden; margin-bottom: 8px; }
     .zone-toggle button {
-      flex: 1;
-      padding: 9px 4px;
-      border: none;
-      background: #2e2e4a;
-      color: #888aaa;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
+      flex: 1; padding: 9px 4px; border: none;
+      background: #2e2e4a; color: #888aaa;
+      font-size: 13px; font-weight: 600; cursor: pointer;
       border-right: 1px solid #1a1a2e;
       transition: background 0.15s, color 0.15s;
     }
-
     .zone-toggle button:last-child { border-right: none; }
-    .zone-toggle button.active { background: #4f46e5; color: #fff; }
+    .zone-toggle button.active    { background: #4f46e5; color: #fff; }
 
-    /* ── Controls ── */
     .controls { display: flex; gap: 8px; }
-
-    .controls input[type="text"],
-    .controls select {
-      flex: 1;
-      min-width: 0;
-      padding: 9px 11px;
-      border: none;
-      border-radius: 8px;
-      font-size: 14px;
-      background: #2e2e4a;
-      color: #fff;
-      outline: none;
-      -webkit-appearance: none;
+    .controls input[type="text"], .controls select {
+      flex: 1; min-width: 0; padding: 9px 11px; border: none;
+      border-radius: 8px; font-size: 14px;
+      background: #2e2e4a; color: #fff; outline: none; -webkit-appearance: none;
     }
-
     .controls input[type="text"]::placeholder { color: #888aaa; }
     .controls select option { background: #2e2e4a; }
 
-    #results-count {
-      font-size: 11px;
-      color: #888aaa;
-      padding: 6px 2px 0;
-    }
+    #results-count { font-size: 11px; color: #888aaa; padding: 6px 2px 0; }
 
-    /* ── List ── */
-    .list {
-      padding: 10px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
+    .list { padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
 
-    /* ── Card ── */
     .card {
-      background: #fff;
-      border-radius: 10px;
+      background: #fff; border-radius: 10px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.07);
-      overflow: hidden;
-      cursor: pointer;
-      display: flex;
-      align-items: stretch;
+      overflow: hidden; cursor: pointer;
+      display: flex; align-items: stretch;
       -webkit-tap-highlight-color: transparent;
       transition: transform 0.1s;
     }
-
     .card:active { transform: scale(0.985); }
 
     .drawer-block {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: #1a1a2e;
-      color: #fff;
-      width: 48px;
-      flex-shrink: 0;
-      padding: 8px 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      background: #1a1a2e; color: #fff;
+      width: 48px; flex-shrink: 0; padding: 8px 0;
     }
-
-    .drawer-label {
-      font-size: 7px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #888aaa;
-      margin-bottom: 2px;
-    }
-
+    .drawer-label  { font-size: 7px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #888aaa; margin-bottom: 2px; }
     .drawer-number { font-size: 22px; font-weight: 700; line-height: 1; }
 
     .card-body {
-      flex: 1;
-      min-width: 0;
-      padding: 9px 10px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 3px;
+      flex: 1; min-width: 0; padding: 9px 10px;
+      display: flex; flex-direction: column;
+      justify-content: center; gap: 3px;
     }
-
-    .card-main {
-      font-size: 13px;
-      font-weight: 600;
-      color: #1a1a2e;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .card-arrow { color: #bbb; font-weight: 400; margin: 0 3px; }
+    .card-main   { font-size: 13px; font-weight: 600; color: #1a1a2e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-arrow  { color: #bbb; font-weight: 400; margin: 0 3px; }
     .card-dest-text { color: #666; font-weight: 400; }
+    .card-packet { font-size: 11px; color: #999; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-footer-row { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
 
-    .card-packet {
-      font-size: 11px;
-      color: #999;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .card-footer-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 4px;
-    }
-
-    /* ── Badges ── */
-    .badge {
-      font-size: 10px;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 20px;
-      flex-shrink: 0;
-    }
-
-    .badge-AC               { background: #dbeafe; color: #1e40af; }
-    .badge-Control          { background: #ede9fe; color: #5b21b6; }
-    .badge-DC               { background: #fef3c7; color: #92400e; }
-    .badge-MV               { background: #fee2e2; color: #991b1b; }
+    .badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; flex-shrink: 0; }
+    .badge-AC      { background: #dbeafe; color: #1e40af; }
+    .badge-Control { background: #ede9fe; color: #5b21b6; }
+    .badge-DC      { background: #fef3c7; color: #92400e; }
+    .badge-MV      { background: #fee2e2; color: #991b1b; }
 
     .status-badge {
-      font-size: 10px;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 20px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 150px;
+      font-size: 10px; font-weight: 700; padding: 2px 8px;
+      border-radius: 20px; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis; max-width: 150px;
     }
-
     .status-available  { background: #d1fae5; color: #065f46; }
-    .status-checkedout { background: #fee2e2; color: #991b1b; }
     .status-partial    { background: #fef3c7; color: #92400e; }
+    .status-checkedout { background: #fee2e2; color: #991b1b; }
 
-    /* ── States ── */
-    .empty, .loading {
-      text-align: center;
-      color: #999;
-      padding: 48px 16px;
-      font-size: 15px;
-    }
+    .empty, .loading { text-align: center; color: #999; padding: 48px 16px; font-size: 15px; }
 
-    /* ── Modal ── */
+    /* Modal */
     .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 100;
-      align-items: flex-end;
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5); z-index: 100; align-items: flex-end;
     }
-
     .modal-overlay.active { display: flex; }
 
     .modal {
-      background: #fff;
-      border-radius: 18px 18px 0 0;
-      width: 100%;
-      max-height: 88vh;
-      overflow-y: auto;
-      padding: 0 16px 36px;
-      position: relative;
+      background: #fff; border-radius: 18px 18px 0 0;
+      width: 100%; max-height: 88vh; overflow-y: auto;
+      padding: 0 16px 36px; position: relative;
     }
 
     .modal-top-bar {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 14px 0 10px;
-      position: relative;
+      display: flex; align-items: center; justify-content: center;
+      padding: 14px 0 10px; position: relative;
+    }
+    .modal-handle { width: 40px; height: 4px; background: #ddd; border-radius: 2px; }
+    .modal-close  {
+      position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+      background: #f2f4f7; border: none; color: #888;
+      width: 30px; height: 30px; border-radius: 50%;
+      font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
     }
 
-    .modal-handle {
-      width: 40px;
-      height: 4px;
-      background: #ddd;
-      border-radius: 2px;
-    }
-
-    .modal-close {
-      position: absolute;
-      right: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      background: #f2f4f7;
-      border: none;
-      color: #888;
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      font-size: 16px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      line-height: 1;
-    }
-
-    .modal-title {
-      font-size: 15px;
-      font-weight: 700;
-      margin-bottom: 3px;
-      word-break: break-word;
-    }
-
-    .modal-subtitle {
-      font-size: 12px;
-      color: #888;
-      margin-bottom: 16px;
-    }
+    .modal-title    { font-size: 15px; font-weight: 700; margin-bottom: 3px; word-break: break-word; }
+    .modal-subtitle { font-size: 12px; color: #888; margin-bottom: 16px; }
 
     .modal-section-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 8px;
+      display: flex; align-items: center;
+      justify-content: space-between; margin-bottom: 8px;
     }
+    .modal-section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #aaa; }
+    .toggle-select-btn   { background: none; border: 1px solid #ddd; color: #666; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; cursor: pointer; }
 
-    .modal-section-title {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #aaa;
-    }
-
-    .toggle-select-btn {
-      background: none;
-      border: 1px solid #ddd;
-      color: #666;
-      font-size: 11px;
-      font-weight: 600;
-      padding: 3px 10px;
-      border-radius: 20px;
-      cursor: pointer;
-    }
-
-    .checkout-info {
-      border-radius: 8px;
-      padding: 10px 12px;
-      margin-bottom: 16px;
-      font-size: 13px;
-    }
-
+    .checkout-info { border-radius: 8px; padding: 10px 12px; margin-bottom: 16px; font-size: 13px; }
     .checkout-info-full    { background: #fff8e1; border-left: 3px solid #f59e0b; color: #78350f; }
     .checkout-info-partial { background: #fff3e0; border-left: 3px solid #ea580c; color: #7c2d12; }
+    .co-header-line { font-weight: 700; margin-bottom: 6px; font-size: 12px; }
+    .co-record-line { font-size: 12px; margin-top: 3px; }
 
-    .partial-indicator {
-      margin-top: 6px;
-      font-weight: 700;
-      font-size: 12px;
-    }
-
-    /* ── Label list ── */
-    .label-list {
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-      margin-bottom: 18px;
-    }
+    .label-list { display: flex; flex-direction: column; gap: 7px; margin-bottom: 18px; }
 
     .label-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 12px;
-      background: #f8f9fa;
-      border-radius: 8px;
-      cursor: pointer;
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 10px 12px; background: #f8f9fa;
+      border-radius: 8px; cursor: pointer;
     }
-
     .label-item-disabled {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 12px;
-      background: #f0f0f0;
-      border-radius: 8px;
-      opacity: 0.5;
-      cursor: not-allowed;
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 10px 12px; background: #f0f0f0;
+      border-radius: 8px; opacity: 0.6; cursor: not-allowed;
+      position: relative;
     }
-
-    .label-item input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      flex-shrink: 0;
-      accent-color: #4f46e5;
-    }
-
+    .label-item input[type="checkbox"] { width: 18px; height: 18px; flex-shrink: 0; accent-color: #4f46e5; margin-top: 1px; }
     .label-item-text { flex: 1; min-width: 0; }
+    .label-source { font-size: 13px; font-weight: 600; color: #1a1a2e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .label-dest   { font-size: 12px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .label-co-by  { font-size: 11px; color: #c2410c; margin-top: 3px; font-style: italic; }
 
-    .label-source {
-      font-size: 13px;
-      font-weight: 600;
-      color: #1a1a2e;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    .all-checked-out-msg {
+      background: #fee2e2; border-radius: 8px;
+      padding: 12px 14px; font-size: 13px;
+      color: #991b1b; font-weight: 600;
+      margin-bottom: 18px; text-align: center;
     }
 
-    .label-dest {
-      font-size: 12px;
-      color: #888;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    /* ── Name input ── */
     .name-input-wrap { margin-bottom: 14px; }
-
     .name-input-wrap label {
-      display: block;
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #aaa;
-      margin-bottom: 6px;
+      display: block; font-size: 11px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      color: #aaa; margin-bottom: 6px;
     }
-
     .name-input-wrap input {
-      width: 100%;
-      padding: 13px 12px;
-      border: 1.5px solid #e0e0e0;
-      border-radius: 8px;
-      font-size: 15px;
-      outline: none;
-      background: #ffffff;
-      color: #1a1a2e;
-      -webkit-appearance: none;
+      width: 100%; padding: 13px 12px;
+      border: 1.5px solid #e0e0e0; border-radius: 8px;
+      font-size: 15px; outline: none;
+      background: #fff; color: #1a1a2e; -webkit-appearance: none;
     }
-
     .name-input-wrap input:focus { border-color: #4f46e5; }
     .name-input-wrap input::placeholder { color: #bbb; }
 
-    .btn {
-      width: 100%;
-      padding: 15px;
-      border: none;
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-bottom: 8px;
-    }
+    .btn { width: 100%; padding: 15px; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; margin-bottom: 8px; }
+    .btn:disabled  { opacity: 0.6; }
+    .btn-checkout  { background: #4f46e5; color: #fff; }
+    .btn-checkin   { background: #059669; color: #fff; }
+    .btn-cancel    { background: #f2f4f7; color: #666; }
 
-    .btn:disabled { opacity: 0.6; }
-    .btn-checkout { background: #4f46e5; color: #fff; }
-    .btn-checkin  { background: #059669; color: #fff; }
-    .btn-cancel   { background: #f2f4f7; color: #666; }
-
-    /* ── History view ── */
+    /* History */
     .history-header {
-      background: #1a1a2e;
-      color: #fff;
-      padding: 14px;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      background: #1a1a2e; color: #fff; padding: 14px;
+      position: sticky; top: 0; z-index: 10;
+      display: flex; align-items: center; gap: 12px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.25);
     }
-
-    .back-btn {
-      background: #2e2e4a;
-      border: none;
-      color: #aaa;
-      padding: 7px 12px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
+    .back-btn { background: #2e2e4a; border: none; color: #aaa; padding: 7px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
     .history-header h1 { font-size: 17px; font-weight: 700; }
 
-    .history-zone-filter {
-      display: flex;
-      background: #1a1a2e;
-      padding: 0 12px 10px;
-      gap: 0;
-    }
-
+    .history-zone-filter { display: flex; background: #1a1a2e; padding: 0 12px 10px; }
     .hz-btn {
-      flex: 1;
-      padding: 8px 4px;
-      border: none;
-      background: #2e2e4a;
-      color: #888aaa;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
+      flex: 1; padding: 8px 4px; border: none;
+      background: #2e2e4a; color: #888aaa;
+      font-size: 12px; font-weight: 600; cursor: pointer;
       border-right: 1px solid #1a1a2e;
       transition: background 0.15s, color 0.15s;
     }
-
     .hz-btn:first-child { border-radius: 8px 0 0 8px; }
     .hz-btn:last-child  { border-radius: 0 8px 8px 0; border-right: none; }
     .hz-btn.active      { background: #4f46e5; color: #fff; }
 
-    .history-list {
-      padding: 10px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
+    .history-list { padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; }
 
-    .history-card {
-      background: #fff;
-      border-radius: 10px;
-      padding: 11px 13px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.07);
-    }
-
-    .history-card-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 5px;
-    }
-
+    .history-card { background: #fff; border-radius: 10px; padding: 11px 13px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
+    .history-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 5px; }
     .history-badges { display: flex; gap: 5px; flex-wrap: wrap; }
 
-    .history-action {
-      display: inline-block;
-      font-size: 10px;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 20px;
-      letter-spacing: 0.3px;
-      flex-shrink: 0;
-    }
-
+    .history-action { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.3px; flex-shrink: 0; }
     .action-checkout { background: #fee2e2; color: #991b1b; }
     .action-checkin  { background: #d1fae5; color: #065f46; }
 
-    .partial-badge {
-      display: inline-block;
-      font-size: 10px;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 20px;
-      background: #fef3c7;
-      color: #92400e;
-      flex-shrink: 0;
-    }
+    .partial-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; background: #fef3c7; color: #92400e; flex-shrink: 0; }
 
-    .history-checkin-btn {
-      background: #059669;
-      border: none;
-      color: #fff;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 20px;
-      cursor: pointer;
-      flex-shrink: 0;
-      white-space: nowrap;
-    }
+    .history-checkin-btn { background: #059669; border: none; color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; cursor: pointer; flex-shrink: 0; white-space: nowrap; }
 
-    .history-packet {
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 3px;
-      word-break: break-word;
-    }
+    .history-packet { font-size: 13px; font-weight: 600; margin-bottom: 3px; word-break: break-word; }
+    .history-meta   { font-size: 12px; color: #888; line-height: 1.5; }
 
-    .history-meta { font-size: 12px; color: #888; line-height: 1.5; }
-
-    .view-details-btn {
-      background: none;
-      border: none;
-      color: #4f46e5;
-      font-size: 12px;
-      font-weight: 600;
-      padding: 4px 0 0;
-      cursor: pointer;
-      display: block;
-    }
+    .view-details-btn { background: none; border: none; color: #4f46e5; font-size: 12px; font-weight: 600; padding: 4px 0 0; cursor: pointer; display: block; }
 
     .history-labels { display: none; margin-top: 8px; padding-top: 8px; border-top: 1px solid #f0f0f0; flex-direction: column; gap: 4px; }
     .history-labels.open { display: flex; }
-
-    .history-label-item {
-      font-size: 12px;
-      color: #555;
-      padding: 4px 8px;
-      background: #f8f9fa;
-      border-radius: 6px;
-    }
+    .history-label-item { font-size: 12px; color: #555; padding: 4px 8px; background: #f8f9fa; border-radius: 6px; }
   </style>
 </head>
 <body>
 
-<!-- ── MAIN VIEW ── -->
+<!-- MAIN VIEW -->
 <div id="view-main" class="view active">
   <header>
     <div class="header-top">
@@ -597,10 +266,8 @@
     <div class="controls">
       <input type="text" id="search"
         placeholder="Search source or destination..."
-        autocomplete="off"
-        autocorrect="off"
-        autocapitalize="off"
-        spellcheck="false" />
+        autocomplete="off" autocorrect="off"
+        autocapitalize="off" spellcheck="false" />
       <select id="filter">
         <option value="">All Systems</option>
         <option value="AC">AC</option>
@@ -614,7 +281,7 @@
   <div class="list" id="list"></div>
 </div>
 
-<!-- ── HISTORY VIEW ── -->
+<!-- HISTORY VIEW -->
 <div id="view-history" class="view">
   <div class="history-header">
     <button class="back-btn" onclick="showMain()">&#8592; Back</button>
@@ -629,7 +296,7 @@
   <div class="history-list" id="history-list"></div>
 </div>
 
-<!-- ── MODAL ── -->
+<!-- MODAL -->
 <div class="modal-overlay" id="modal-overlay" onclick="closeModalOnOverlay(event)">
   <div class="modal">
     <div class="modal-top-bar">
@@ -639,18 +306,21 @@
     <div class="modal-title"    id="modal-title"></div>
     <div class="modal-subtitle" id="modal-subtitle"></div>
     <div id="checkout-info"></div>
-    <div class="modal-section-header">
-      <span class="modal-section-title">Labels in this packet</span>
-      <button class="toggle-select-btn" id="toggle-select-btn" onclick="toggleSelectAll()">Deselect All</button>
+    <div id="label-section">
+      <div class="modal-section-header">
+        <span class="modal-section-title" id="label-section-title">Labels in this packet</span>
+        <button class="toggle-select-btn" id="toggle-select-btn" onclick="toggleSelectAll()">Deselect All</button>
+      </div>
+      <div class="label-list" id="label-list"></div>
     </div>
-    <div class="label-list" id="label-list"></div>
-    <div class="name-input-wrap">
+    <div id="all-checked-out-msg" class="all-checked-out-msg" style="display:none">
+      All labels in this packet are currently checked out. Check in from the History tab.
+    </div>
+    <div class="name-input-wrap" id="name-input-wrap">
       <label>Your Name</label>
       <input type="text" id="name-input"
         placeholder="Enter your name..."
-        autocomplete="name"
-        autocorrect="off"
-        spellcheck="false" />
+        autocomplete="name" autocorrect="off" spellcheck="false" />
     </div>
     <button class="btn" id="btn-action" onclick="submitAction()"></button>
     <button class="btn btn-cancel" onclick="closeModal()">Cancel</button>
@@ -663,14 +333,14 @@
   const CACHE_TTL  = 10 * 60 * 1000;
   const ZONES      = ["EYD Zone 1", "EYD Zone 2", "MYD"];
 
-  let activeZone       = "EYD Zone 1";
-  let allZoneData      = {};
-  let checkoutsData    = [];
-  let currentModal     = null;
+  let activeZone        = "EYD Zone 1";
+  let allZoneData       = {};
+  let checkoutsData     = [];   // ALL checkout rows (multiple per packet possible)
+  let currentModal      = null;
   let historyZoneFilter = "all";
-  let _historyData     = [];
+  let _historyData      = [];
 
-  // ── Zone toggle ──────────────────────────────────────────────────────────
+  // Zone toggle
   document.querySelectorAll(".zone-toggle button").forEach(btn => {
     btn.addEventListener("click", () => {
       activeZone = btn.dataset.zone;
@@ -679,26 +349,21 @@
       render();
     });
   });
-
   document.getElementById("search").addEventListener("input", render);
   document.getElementById("filter").addEventListener("change", render);
 
-  // ── Cache ─────────────────────────────────────────────────────────────────
-  function saveCache(data) {
-    try { localStorage.setItem(CACHE_KEY, JSON.stringify({ data, ts: Date.now() })); } catch {}
-  }
-
+  // Cache
+  function saveCache(data) { try { localStorage.setItem(CACHE_KEY, JSON.stringify({ data, ts: Date.now() })); } catch {} }
   function loadCache() {
     try {
       const raw = localStorage.getItem(CACHE_KEY);
       if (!raw) return null;
       const p = JSON.parse(raw);
-      if (Date.now() - p.ts > CACHE_TTL) return null;
-      return p.data;
+      return (Date.now() - p.ts > CACHE_TTL) ? null : p.data;
     } catch { return null; }
   }
 
-  // ── API ───────────────────────────────────────────────────────────────────
+  // API
   async function apiFetch(params) {
     const p = {};
     for (const [k, v] of Object.entries(params)) p[k] = Array.isArray(v) ? JSON.stringify(v) : v;
@@ -713,7 +378,7 @@
     return data;
   }
 
-  // ── Init ──────────────────────────────────────────────────────────────────
+  // Init
   async function init() {
     const cached = loadCache();
     if (cached) {
@@ -744,50 +409,78 @@
       checkoutsData = coRes.data || [];
       saveCache(zoneData);
       render();
-    } catch { alert("Refresh failed. Check your connection."); }
+    } catch { alert("Refresh failed."); }
     finally { btn.classList.remove("spinning"); }
   }
 
-  // ── Fuzzy search ──────────────────────────────────────────────────────────
-  // Split query by spaces AND hyphens -- all tokens must appear somewhere in the entry
+  // Fuzzy search: split by spaces and hyphens, all tokens must appear
   function matchesSearch(query, item) {
     if (!query) return true;
-    const haystack = `${item.source||""} ${item.dest||""} ${item.packet||""}`.toLowerCase();
-    const tokens   = query.toLowerCase().split(/[\s\-]+/).filter(t => t.length > 0);
-    return tokens.every(t => haystack.includes(t));
+    const hay    = `${item.source||""} ${item.dest||""} ${item.packet||""}`.toLowerCase();
+    const tokens = query.toLowerCase().split(/[\s\-]+/).filter(t => t.length > 0);
+    return tokens.every(t => hay.includes(t));
+  }
+
+  // ── Checkout data helpers ─────────────────────────────────────────────────
+
+  // Get all active checkout records for a packet+zone
+  function getPacketCheckouts(packet, zone) {
+    return checkoutsData.filter(c => c.packet === packet && c.zone === zone);
+  }
+
+  // Build a map of labelValue → { by, at } from a list of checkout records
+  function buildCoLabelInfo(records) {
+    const info = {};
+    records.forEach(co => {
+      if (!co.labels) return;
+      co.labels.split(", ").filter(Boolean).forEach(l => {
+        info[l.trim()] = { by: co.checkedOutBy, at: co.checkedOutAt };
+      });
+    });
+    return info;
+  }
+
+  // Check if a specific label entry is in the coLabelInfo map
+  // Tries exact match first, then prefix match (source → dest) for robustness
+  function isLabelCheckedOut(l, coLabelInfo) {
+    const exact  = buildLabelValue(l);
+    const prefix = `${l.source||""} → ${l.dest||""}`;
+    if (coLabelInfo[exact]) return coLabelInfo[exact];
+    const prefixKey = Object.keys(coLabelInfo).find(k => k.startsWith(prefix));
+    return prefixKey ? coLabelInfo[prefixKey] : null;
+  }
+
+  function buildLabelValue(l) {
+    return `${l.source||""} → ${l.dest||""} [${l.srcterm||l.system||""}]`;
+  }
+
+  // Get packet-level status for card badge
+  function getCardStatus(packet, zone) {
+    const z   = zone || activeZone;
+    if (!packet) return "available";
+    const recs = getPacketCheckouts(packet, z);
+    if (!recs.length) return "available";
+    const coInfo     = buildCoLabelInfo(recs);
+    const zoneLabels = (allZoneData[z]||[]).filter(e => e.packet === packet);
+    const total      = zoneLabels.length;
+    const coCount    = total > 0
+      ? zoneLabels.filter(l => !!isLabelCheckedOut(l, coInfo)).length
+      : Object.keys(coInfo).length;
+    if (total > 0 && coCount >= total) return "full";
+    return "partial";
   }
 
   // ── Render ────────────────────────────────────────────────────────────────
   const badgeClass = {
-    "AC":               "badge-AC",
-    "Control/Protection": "badge-Control",
-    "DC":               "badge-DC",
-    "MV":               "badge-MV"
+    "AC": "badge-AC", "Control/Protection": "badge-Control",
+    "DC": "badge-DC", "MV": "badge-MV"
   };
-
-  function getCheckout(packet) {
-    return checkoutsData.find(c => c.packet === packet && c.zone === activeZone) || null;
-  }
-
-  function getCheckoutStatus(item) {
-    if (!item.packet) return { type: "available" };
-    const co = getCheckout(item.packet);
-    if (!co) return { type: "available" };
-    const zoneData   = allZoneData[activeZone] || [];
-    const totalCount = zoneData.filter(e => e.packet === item.packet).length;
-    const coLabels   = co.labels ? co.labels.split(", ").filter(Boolean) : [];
-    const isPartial  = totalCount > 0 && coLabels.length < totalCount;
-    return { type: isPartial ? "partial" : "checkedout", co, isPartial };
-  }
 
   function render() {
     const query    = document.getElementById("search").value.trim();
     const system   = document.getElementById("filter").value;
     const zoneData = allZoneData[activeZone] || [];
-
-    const filtered = zoneData.filter(item =>
-      matchesSearch(query, item) && (!system || item.system === system)
-    );
+    const filtered = zoneData.filter(i => matchesSearch(query, i) && (!system || i.system === system));
 
     document.getElementById("results-count").textContent = `${filtered.length} of ${zoneData.length} results`;
 
@@ -795,10 +488,10 @@
     if (!filtered.length) { document.getElementById("list").innerHTML = `<div class="empty">No results found.</div>`; return; }
 
     document.getElementById("list").innerHTML = filtered.map(item => {
-      const s = getCheckoutStatus(item);
+      const status = getCardStatus(item.packet, activeZone);
       let statusHtml;
-      if (s.type === "partial")     statusHtml = `<span class="status-badge status-partial">Partial: ${s.co.checkedOutBy}</span>`;
-      else if (s.type === "checkedout") statusHtml = `<span class="status-badge status-checkedout">Out: ${s.co.checkedOutBy}</span>`;
+      if      (status === "full")    statusHtml = `<span class="status-badge status-checkedout">Checked Out</span>`;
+      else if (status === "partial") statusHtml = `<span class="status-badge status-partial">Partial Out</span>`;
       else                           statusHtml = `<span class="status-badge status-available">Available</span>`;
 
       const safeItem = encodeURIComponent(JSON.stringify(item));
@@ -806,7 +499,7 @@
         <div class="card" onclick="openModal(decodeURIComponent('${safeItem}'))">
           <div class="drawer-block">
             <span class="drawer-label">DRW</span>
-            <span class="drawer-number">${item.drawer || "–"}</span>
+            <span class="drawer-number">${item.drawer||"–"}</span>
           </div>
           <div class="card-body">
             <div class="card-main">${item.source||"–"}<span class="card-arrow">→</span><span class="card-dest-text">${item.dest||"–"}</span></div>
@@ -821,123 +514,172 @@
   }
 
   // ── Modal ─────────────────────────────────────────────────────────────────
-  function buildLabelValue(l) {
-    return `${l.source||""} → ${l.dest||""} [${l.srcterm||l.system||""}]`;
-  }
 
-  function openModal(itemJson, overrideZone) {
+  // CHECKOUT MODE: called from main card tap
+  function openModal(itemJson) {
     const item     = typeof itemJson === "string" ? JSON.parse(itemJson) : itemJson;
-    const zone     = overrideZone || activeZone;
+    const zone     = activeZone;
     const packet   = item.packet || "";
-    const co       = checkoutsData.find(c => c.packet === packet && c.zone === zone) || null;
     const zoneData = allZoneData[zone] || [];
     const labels   = packet ? zoneData.filter(e => e.packet === packet) : [item];
-    const fromHistory = document.getElementById("view-history").classList.contains("active");
 
-    currentModal = { packet, zone, isCheckedOut: !!co, fromHistory };
+    // Get ALL active checkouts for this packet
+    const coRecords = getPacketCheckouts(packet, zone);
+    const coLabelInfo = buildCoLabelInfo(coRecords);
+
+    // Separate available vs checked-out labels
+    const availableLabels  = labels.filter(l => !isLabelCheckedOut(l, coLabelInfo));
+    const checkedOutLabels = labels.filter(l =>  isLabelCheckedOut(l, coLabelInfo));
+    const allCheckedOut    = availableLabels.length === 0 && labels.length > 0;
+
+    currentModal = { packet, zone, isCheckedOut: false, fromHistory: false };
 
     document.getElementById("modal-title").textContent    = packet || `${item.source} → ${item.dest}`;
     document.getElementById("modal-subtitle").textContent = `Drawer ${item.drawer||"–"} · ${zone}`;
 
-    // ── Checkout info banner ──────────────────────────────────────────────
+    // Info banner
     const infoEl = document.getElementById("checkout-info");
-    if (co) {
-      const date         = co.checkedOutAt ? new Date(co.checkedOutAt).toLocaleString() : "";
-      const coLabelArr   = co.labels ? co.labels.split(", ").filter(Boolean) : [];
-      const totalLabels  = labels.length;
-      const isPartial    = totalLabels > 0 && coLabelArr.length < totalLabels;
-      const infoClass    = isPartial ? "checkout-info checkout-info-partial" : "checkout-info checkout-info-full";
-      const partialLine  = isPartial
-        ? `<div class="partial-indicator">⚠ Partial checkout: ${coLabelArr.length} of ${totalLabels} labels checked out</div>`
-        : `<div class="partial-indicator">Full packet checked out</div>`;
-      infoEl.innerHTML = `<div class="${infoClass}">Checked out by <strong>${co.checkedOutBy}</strong>${date ? " on " + date : ""}${partialLine}</div>`;
+    if (coRecords.length > 0) {
+      const total   = labels.length;
+      const coCount = checkedOutLabels.length;
+      const isFull  = coCount >= total && total > 0;
+      const cls     = isFull ? "checkout-info checkout-info-full" : "checkout-info checkout-info-partial";
+      const header  = isFull
+        ? `Full packet checked out`
+        : `⚠ Partial checkout: ${coCount} of ${total} labels checked out`;
+      const records = coRecords.map(co => {
+        const coArr  = co.labels ? co.labels.split(", ").filter(Boolean) : [];
+        const date   = co.checkedOutAt ? new Date(co.checkedOutAt).toLocaleString() : "";
+        return `<div class="co-record-line">${coArr.length} label(s) by <strong>${co.checkedOutBy}</strong>${date ? " · " + date : ""}</div>`;
+      }).join("");
+      infoEl.innerHTML = `<div class="${cls}"><div class="co-header-line">${header}</div>${records}</div>`;
     } else {
       infoEl.innerHTML = "";
     }
 
-    // ── Build set of checked-out label values for greying out ─────────────
-    const coLabelSet = new Set();
-    if (co && co.labels) {
-      co.labels.split(", ").filter(Boolean).forEach(s => coLabelSet.add(s.trim()));
-    }
-
-    // ── Label list ────────────────────────────────────────────────────────
+    // Duplicate detection for srcterm display
     const comboCounts = {};
-    labels.forEach(l => {
-      const key = `${l.source}|${l.dest}|${l.system}`;
-      comboCounts[key] = (comboCounts[key] || 0) + 1;
-    });
+    labels.forEach(l => { const k = `${l.source}|${l.dest}|${l.system}`; comboCounts[k] = (comboCounts[k]||0)+1; });
 
-    document.getElementById("label-list").innerHTML = labels.map((l, i) => {
-      const labelVal  = buildLabelValue(l);
-      const key       = `${l.source}|${l.dest}|${l.system}`;
-      const isDup     = comboCounts[key] > 1;
-      const sysBadge  = l.system ? `<span class="badge ${badgeClass[l.system]||""}" style="margin-top:4px;display:inline-block">${l.system}</span>` : "";
-      const srctermEl = isDup && l.srcterm ? `<div style="font-size:11px;color:#6366f1;margin-top:2px;word-break:break-word">${l.srcterm}</div>` : "";
+    // Build label list
+    const labelSection    = document.getElementById("label-section");
+    const allCheckedOutEl = document.getElementById("all-checked-out-msg");
+    const nameWrap        = document.getElementById("name-input-wrap");
+    const btnAction       = document.getElementById("btn-action");
+    const toggleBtn       = document.getElementById("toggle-select-btn");
 
-      if (co) {
-        // Check-in mode: checked-out labels selectable, others greyed out
-        const isThisOut = coLabelSet.has(labelVal) ||
-          Array.from(coLabelSet).some(s => s.startsWith(`${l.source||""} → ${l.dest||""}`));
+    if (allCheckedOut) {
+      labelSection.style.display    = "none";
+      allCheckedOutEl.style.display = "block";
+      nameWrap.style.display        = "none";
+      btnAction.style.display       = "none";
+    } else {
+      labelSection.style.display    = "block";
+      allCheckedOutEl.style.display = "none";
+      nameWrap.style.display        = "block";
+      btnAction.style.display       = "block";
+      toggleBtn.style.display       = "inline-block";
+      toggleBtn.textContent         = "Deselect All";
 
-        if (isThisOut) {
-          return `
-            <label class="label-item">
-              <input type="checkbox" id="lbl-${i}" value="${labelVal}" checked />
-              <div class="label-item-text">
-                <div class="label-source">${l.source||"–"}</div>
-                <div class="label-dest">${l.dest||"–"}</div>
-                ${srctermEl}${sysBadge}
-              </div>
-            </label>`;
-        } else {
+      document.getElementById("label-list").innerHTML = labels.map((l, i) => {
+        const coInfo   = isLabelCheckedOut(l, coLabelInfo);
+        const key      = `${l.source}|${l.dest}|${l.system}`;
+        const isDup    = comboCounts[key] > 1;
+        const sysBadge = l.system ? `<span class="badge ${badgeClass[l.system]||""}" style="margin-top:4px;display:inline-block">${l.system}</span>` : "";
+        const stEl     = isDup && l.srcterm ? `<div style="font-size:11px;color:#6366f1;margin-top:2px;word-break:break-word">${l.srcterm}</div>` : "";
+
+        if (coInfo) {
+          // Label is checked out -- show greyed out with who has it
+          const byText = `Checked out by ${coInfo.by}`;
           return `
             <div class="label-item-disabled">
               <input type="checkbox" disabled />
               <div class="label-item-text">
                 <div class="label-source">${l.source||"–"}</div>
                 <div class="label-dest">${l.dest||"–"}</div>
-                ${srctermEl}${sysBadge}
+                ${stEl}${sysBadge}
+                <div class="label-co-by">${byText}</div>
               </div>
             </div>`;
+        } else {
+          // Label is available -- selectable
+          return `
+            <label class="label-item">
+              <input type="checkbox" id="lbl-${i}" value="${buildLabelValue(l)}" checked />
+              <div class="label-item-text">
+                <div class="label-source">${l.source||"–"}</div>
+                <div class="label-dest">${l.dest||"–"}</div>
+                ${stEl}${sysBadge}
+              </div>
+            </label>`;
         }
-      } else {
-        // Check-out mode: all selectable
-        return `
-          <label class="label-item">
-            <input type="checkbox" id="lbl-${i}" value="${labelVal}" checked />
-            <div class="label-item-text">
-              <div class="label-source">${l.source||"–"}</div>
-              <div class="label-dest">${l.dest||"–"}</div>
-              ${srctermEl}${sysBadge}
-            </div>
-          </label>`;
-      }
+      }).join("");
+
+      btnAction.textContent = "Check Out";
+      btnAction.className   = "btn btn-checkout";
+      btnAction.disabled    = false;
+    }
+
+    document.getElementById("name-input").value = "";
+    document.getElementById("modal-overlay").classList.add("active");
+  }
+
+  // CHECKIN MODE: called from history page for a specific checkout record
+  function openCheckinModal(packet, zone, labelArr, timestamp) {
+    currentModal = { packet, zone, isCheckedOut: true, fromHistory: true, timestamp };
+
+    document.getElementById("modal-title").textContent    = packet;
+    document.getElementById("modal-subtitle").textContent = `Check In · ${zone}`;
+    document.getElementById("checkout-info").innerHTML    = "";
+
+    // Show label section with the specific labels from this checkout record
+    document.getElementById("label-section").style.display    = "block";
+    document.getElementById("all-checked-out-msg").style.display = "none";
+    document.getElementById("name-input-wrap").style.display  = "block";
+    document.getElementById("btn-action").style.display       = "block";
+
+    document.getElementById("label-section-title").textContent = "Labels to check in";
+    document.getElementById("toggle-select-btn").style.display = "inline-block";
+    document.getElementById("toggle-select-btn").textContent   = "Deselect All";
+
+    document.getElementById("label-list").innerHTML = labelArr.map((labelStr, i) => {
+      // Parse display from stored string "source → dest [srcterm]"
+      const arrowIdx  = labelStr.indexOf(" → ");
+      const bracketIdx = labelStr.lastIndexOf(" [");
+      const source = arrowIdx > -1 ? labelStr.substring(0, arrowIdx) : labelStr;
+      const dest   = arrowIdx > -1 ? (bracketIdx > arrowIdx ? labelStr.substring(arrowIdx+3, bracketIdx) : labelStr.substring(arrowIdx+3)) : "";
+      const srcterm = bracketIdx > -1 ? labelStr.substring(bracketIdx+2, labelStr.length-1) : "";
+      return `
+        <label class="label-item">
+          <input type="checkbox" id="lbl-${i}" value="${labelStr}" checked />
+          <div class="label-item-text">
+            <div class="label-source">${source||"–"}</div>
+            <div class="label-dest">${dest||""}</div>
+            ${srcterm ? `<div style="font-size:11px;color:#6366f1;margin-top:2px">${srcterm}</div>` : ""}
+          </div>
+        </label>`;
     }).join("");
 
-    // ── Button ────────────────────────────────────────────────────────────
     const btn = document.getElementById("btn-action");
-    btn.textContent = co ? "Check In" : "Check Out";
-    btn.className   = co ? "btn btn-checkin" : "btn btn-checkout";
+    btn.textContent = "Check In";
+    btn.className   = "btn btn-checkin";
     btn.disabled    = false;
-
-    // Hide the deselect all button in check-in mode for clarity
-    document.getElementById("toggle-select-btn").style.display = co ? "none" : "inline-block";
 
     document.getElementById("name-input").value = "";
     document.getElementById("modal-overlay").classList.add("active");
   }
 
   function toggleSelectAll() {
-    const checkboxes = Array.from(document.querySelectorAll("#label-list input[type='checkbox']:not(:disabled)"));
-    const allChecked = checkboxes.every(cb => cb.checked);
-    const newState   = !allChecked;
-    checkboxes.forEach(cb => cb.checked = newState);
-    document.getElementById("toggle-select-btn").textContent = newState ? "Deselect All" : "Select All";
+    const cbs      = Array.from(document.querySelectorAll("#label-list input[type='checkbox']:not(:disabled)"));
+    const allChk   = cbs.every(cb => cb.checked);
+    cbs.forEach(cb => cb.checked = !allChk);
+    document.getElementById("toggle-select-btn").textContent = !allChk ? "Deselect All" : "Select All";
   }
 
   function closeModal() {
     document.getElementById("modal-overlay").classList.remove("active");
+    // Reset label section title for next open
+    document.getElementById("label-section-title").textContent = "Labels in this packet";
     currentModal = null;
   }
 
@@ -955,10 +697,16 @@
 
     const saved = { ...currentModal };
 
-    // ── Optimistic update -- update UI immediately ──────────────────────
+    // Optimistic update
     if (saved.isCheckedOut) {
-      checkoutsData = checkoutsData.filter(c => !(c.packet === saved.packet && c.zone === saved.zone));
+      // Check-in: remove the matching record from local state
+      checkoutsData = checkoutsData.filter(c => !(
+        c.packet === saved.packet &&
+        c.zone   === saved.zone   &&
+        c.checkedOutAt === saved.timestamp
+      ));
     } else {
+      // Check-out: add new record
       checkoutsData.push({
         packet:       saved.packet,
         labels:       selected.join(", "),
@@ -972,29 +720,27 @@
     render();
     if (saved.fromHistory) loadHistory();
 
-    // ── Sync to server in background ────────────────────────────────────
+    // Sync to server
     try {
-      await apiFetch({
+      const params = {
         action: saved.isCheckedOut ? "checkin" : "checkout",
         packet: saved.packet,
         labels: selected,
         name,
-        zone:   saved.zone
-      });
-      // Confirm with server state
+        zone:  saved.zone
+      };
+      if (saved.isCheckedOut && saved.timestamp) params.timestamp = saved.timestamp;
+
+      await apiFetch(params);
       const coRes   = await apiFetch({ action: "getCheckouts" });
       checkoutsData = coRes.data || [];
       render();
       if (saved.fromHistory) loadHistory();
     } catch {
-      // Rollback: refetch actual state from server
-      try {
-        const coRes   = await apiFetch({ action: "getCheckouts" });
-        checkoutsData = coRes.data || [];
-      } catch {}
+      try { const coRes = await apiFetch({ action: "getCheckouts" }); checkoutsData = coRes.data || []; } catch {}
       render();
       if (saved.fromHistory) loadHistory();
-      alert("Something went wrong saving. The page has been refreshed to the latest state.");
+      alert("Something went wrong. Page refreshed to latest state.");
     }
   }
 
@@ -1017,21 +763,33 @@
     }
 
     document.getElementById("history-list").innerHTML = filtered.map(h => {
-      const isOut      = h.action === "CHECKOUT";
-      const date       = h.timestamp ? new Date(h.timestamp).toLocaleString() : "";
-      const labelArr   = h.labels ? h.labels.split(", ").filter(Boolean) : [];
+      const isOut    = h.action === "CHECKOUT";
+      const date     = h.timestamp ? new Date(h.timestamp).toLocaleString() : "";
+      const labelArr = h.labels ? h.labels.split(", ").filter(Boolean) : [];
+
+      // Full vs partial: compare this record's labels vs total packet labels
       const zoneData   = allZoneData[h.zone] || [];
       const totalCount = h.packet ? zoneData.filter(e => e.packet === h.packet).length : 0;
       const isPartial  = totalCount > 0 && labelArr.length < totalCount;
-
       const partialBadge = isPartial
         ? `<span class="partial-badge">Partial ${labelArr.length}/${totalCount}</span>`
         : (totalCount > 0 ? `<span class="partial-badge" style="background:#e0e7ff;color:#3730a3">Full</span>` : "");
 
-      // Only show Check In if this is a CHECKOUT event AND the packet is still currently checked out
-      const stillOut = isOut && checkoutsData.some(c => c.packet === h.packet && c.zone === h.zone);
+      // Show Check In only if this specific checkout record is still active
+      // Match by packet + zone + timestamp + name
+      const stillOut = isOut && checkoutsData.some(c =>
+        c.packet        === h.packet    &&
+        c.zone          === h.zone      &&
+        c.checkedOutBy  === h.name      &&
+        c.checkedOutAt  === h.timestamp
+      );
+
+      const encodedPkt  = encodeURIComponent(h.packet || "");
+      const encodedLbls = encodeURIComponent(h.labels || "");
+      const encodedTs   = encodeURIComponent(h.timestamp || "");
+
       const checkinBtn = stillOut
-        ? `<button class="history-checkin-btn" onclick="checkinFromHistory('${encodeURIComponent(h.packet)}','${h.zone}')">Check In</button>`
+        ? `<button class="history-checkin-btn" onclick="checkinFromHistory('${encodedPkt}','${h.zone}','${encodedLbls}','${encodedTs}')">Check In</button>`
         : "";
 
       const labelsHtml = labelArr.map(l => `<div class="history-label-item">${l}</div>`).join("");
@@ -1076,14 +834,14 @@
     btn.textContent = isOpen ? "Hide Details ▴" : "View Details ▾";
   }
 
-  function checkinFromHistory(encodedPacket, zone) {
-    const packet   = decodeURIComponent(encodedPacket);
-    const zoneData = allZoneData[zone] || [];
-    const labels   = zoneData.filter(e => e.packet === packet);
-    openModal({ packet, zone, drawer: labels[0]?.drawer || "" }, zone);
+  function checkinFromHistory(encodedPkt, zone, encodedLbls, encodedTs) {
+    const packet    = decodeURIComponent(encodedPkt);
+    const labelsStr = decodeURIComponent(encodedLbls);
+    const timestamp = decodeURIComponent(encodedTs);
+    const labelArr  = labelsStr.split(", ").filter(Boolean);
+    openCheckinModal(packet, zone, labelArr, timestamp);
   }
 
-  // ── Views ─────────────────────────────────────────────────────────────────
   function showHistory() {
     document.getElementById("view-main").classList.remove("active");
     document.getElementById("view-history").classList.add("active");
@@ -1097,6 +855,5 @@
 
   init();
 </script>
-
 </body>
 </html>
