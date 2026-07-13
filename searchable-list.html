@@ -699,12 +699,24 @@
 
     // Optimistic update
     if (saved.isCheckedOut) {
-      // Check-in: remove the matching record from local state
-      checkoutsData = checkoutsData.filter(c => !(
-        c.packet === saved.packet &&
-        c.zone   === saved.zone   &&
+      // Check-in: update or remove the matching record
+      const coIdx = checkoutsData.findIndex(c =>
+        c.packet       === saved.packet &&
+        c.zone         === saved.zone   &&
         c.checkedOutAt === saved.timestamp
-      ));
+      );
+      if (coIdx > -1) {
+        const currentLabels = checkoutsData[coIdx].labels
+          ? checkoutsData[coIdx].labels.split(", ").filter(Boolean)
+          : [];
+        const checkedInSet = new Set(selected.map(l => l.trim()));
+        const remaining    = currentLabels.filter(l => !checkedInSet.has(l.trim()));
+        if (remaining.length === 0) {
+          checkoutsData.splice(coIdx, 1);        // all returned -- remove record
+        } else {
+          checkoutsData[coIdx] = { ...checkoutsData[coIdx], labels: remaining.join(", ") };
+        }
+      }
     } else {
       // Check-out: add new record
       checkoutsData.push({
@@ -777,19 +789,28 @@
 
       // Show Check In only if this specific checkout record is still active
       // Match by packet + zone + timestamp + name
-      const stillOut = isOut && checkoutsData.some(c =>
-        c.packet        === h.packet    &&
-        c.zone          === h.zone      &&
-        c.checkedOutBy  === h.name      &&
-        c.checkedOutAt  === h.timestamp
+      const currentCoRecord = checkoutsData.find(c =>
+        c.packet       === h.packet &&
+        c.zone         === h.zone   &&
+        c.checkedOutBy === h.name   &&
+        c.checkedOutAt === h.timestamp
       );
+      const stillOut = isOut && !!currentCoRecord;
+
+      // Use CURRENT remaining labels from Checkouts (not original history labels)
+      // This handles partial check-ins where only some labels remain
+      const labelsForCheckin = currentCoRecord ? (currentCoRecord.labels || "") : (h.labels || "");
+      const remainingCount   = labelsForCheckin ? labelsForCheckin.split(", ").filter(Boolean).length : 0;
 
       const encodedPkt  = encodeURIComponent(h.packet || "");
-      const encodedLbls = encodeURIComponent(h.labels || "");
+      const encodedLbls = encodeURIComponent(labelsForCheckin);
       const encodedTs   = encodeURIComponent(h.timestamp || "");
 
+      const remainingLabel = remainingCount > 0 && remainingCount < labelArr.length
+        ? `Check In (${remainingCount})`
+        : "Check In";
       const checkinBtn = stillOut
-        ? `<button class="history-checkin-btn" onclick="checkinFromHistory('${encodedPkt}','${h.zone}','${encodedLbls}','${encodedTs}')">Check In</button>`
+        ? `<button class="history-checkin-btn" onclick="checkinFromHistory('${encodedPkt}','${h.zone}','${encodedLbls}','${encodedTs}')">${remainingLabel}</button>`
         : "";
 
       const labelsHtml = labelArr.map(l => `<div class="history-label-item">${l}</div>`).join("");
