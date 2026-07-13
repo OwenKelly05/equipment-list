@@ -540,9 +540,8 @@
       <select id="filter">
         <option value="">All Systems</option>
         <option value="AC">AC</option>
-        <option value="Control">Control</option>
+        <option value="Control/Protection">Control/Protection</option>
         <option value="DC">DC</option>
-        <option value="Modbus">Modbus</option>
         <option value="MV">MV</option>
       </select>
     </div>
@@ -674,7 +673,7 @@
   }
 
   // ── Render ────────────────────────────────────────────────────────────────
-  const badgeClass = { AC: "badge-AC", Control: "badge-Control", DC: "badge-DC", Modbus: "badge-Modbus", MV: "badge-MV" };
+  const badgeClass = { AC: "badge-AC", "Control/Protection": "badge-Control", DC: "badge-DC", MV: "badge-MV" };
 
   function getCheckout(packet) {
     return checkoutsData.find(c => c.packet === packet && c.zone === activeZone) || null;
