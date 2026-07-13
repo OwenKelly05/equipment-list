@@ -36,10 +36,9 @@
     }
 
     header h1 { font-size: 17px; font-weight: 700; }
-
     .header-right { display: flex; align-items: center; gap: 8px; }
 
-    .history-btn {
+    .history-btn, .refresh-btn {
       background: #2e2e4a;
       border: none;
       color: #aaa;
@@ -50,17 +49,7 @@
       cursor: pointer;
     }
 
-    .refresh-btn {
-      background: #2e2e4a;
-      border: none;
-      color: #aaa;
-      padding: 7px 10px;
-      border-radius: 8px;
-      font-size: 15px;
-      cursor: pointer;
-      line-height: 1;
-    }
-
+    .refresh-btn { padding: 7px 10px; font-size: 15px; }
     .refresh-btn.spinning { animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -91,7 +80,9 @@
     /* ── Controls ── */
     .controls { display: flex; gap: 8px; }
 
-    input[type="text"], select {
+    /* Header inputs (dark) */
+    .controls input[type="text"],
+    .controls select {
       flex: 1;
       min-width: 0;
       padding: 9px 11px;
@@ -104,8 +95,8 @@
       -webkit-appearance: none;
     }
 
-    input[type="text"]::placeholder { color: #888aaa; }
-    select option { background: #2e2e4a; }
+    .controls input[type="text"]::placeholder { color: #888aaa; }
+    .controls select option { background: #2e2e4a; }
 
     #results-count {
       font-size: 11px;
@@ -136,7 +127,6 @@
 
     .card:active { transform: scale(0.985); }
 
-    /* Left drawer block */
     .drawer-block {
       display: flex;
       flex-direction: column;
@@ -160,7 +150,6 @@
 
     .drawer-number { font-size: 22px; font-weight: 700; line-height: 1; }
 
-    /* Right card body */
     .card-body {
       flex: 1;
       min-width: 0;
@@ -181,7 +170,6 @@
     }
 
     .card-arrow { color: #bbb; font-weight: 400; margin: 0 3px; }
-
     .card-dest-text { color: #666; font-weight: 400; }
 
     .card-packet {
@@ -236,13 +224,6 @@
       font-size: 15px;
     }
 
-    .cache-notice {
-      text-align: center;
-      font-size: 11px;
-      color: #aaa;
-      padding: 4px 0 0;
-    }
-
     /* ── Modal ── */
     .modal-overlay {
       display: none;
@@ -285,13 +266,30 @@
       margin-bottom: 16px;
     }
 
+    .modal-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
     .modal-section-title {
       font-size: 11px;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       color: #aaa;
-      margin-bottom: 8px;
+    }
+
+    .toggle-select-btn {
+      background: none;
+      border: 1px solid #ddd;
+      color: #666;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      cursor: pointer;
     }
 
     .checkout-info {
@@ -347,6 +345,7 @@
       text-overflow: ellipsis;
     }
 
+    /* ── Name input (modal -- explicitly white bg) ── */
     .name-input-wrap { margin-bottom: 14px; }
 
     .name-input-wrap label {
@@ -366,10 +365,13 @@
       border-radius: 8px;
       font-size: 15px;
       outline: none;
+      background: #ffffff;
       color: #1a1a2e;
+      -webkit-appearance: none;
     }
 
     .name-input-wrap input:focus { border-color: #4f46e5; }
+    .name-input-wrap input::placeholder { color: #bbb; }
 
     .btn {
       width: 100%;
@@ -387,11 +389,11 @@
     .btn-checkin  { background: #059669; color: #fff; }
     .btn-cancel   { background: #f2f4f7; color: #666; }
 
-    /* ── History ── */
+    /* ── History view ── */
     .history-header {
       background: #1a1a2e;
       color: #fff;
-      padding: 14px 14px;
+      padding: 14px;
       position: sticky;
       top: 0;
       z-index: 10;
@@ -418,7 +420,7 @@
       padding: 10px 12px;
       display: flex;
       flex-direction: column;
-      gap: 7px;
+      gap: 8px;
     }
 
     .history-card {
@@ -428,18 +430,52 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.07);
     }
 
+    .history-card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 5px;
+    }
+
+    .history-badges { display: flex; gap: 5px; flex-wrap: wrap; }
+
     .history-action {
       display: inline-block;
       font-size: 10px;
       font-weight: 700;
       padding: 2px 8px;
       border-radius: 20px;
-      margin-bottom: 5px;
       letter-spacing: 0.3px;
+      flex-shrink: 0;
     }
 
     .action-checkout { background: #fee2e2; color: #991b1b; }
     .action-checkin  { background: #d1fae5; color: #065f46; }
+
+    .partial-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 20px;
+      background: #fef3c7;
+      color: #92400e;
+      flex-shrink: 0;
+    }
+
+    .history-checkin-btn {
+      background: #059669;
+      border: none;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      cursor: pointer;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
 
     .history-packet {
       font-size: 13px;
@@ -449,6 +485,37 @@
     }
 
     .history-meta { font-size: 12px; color: #888; line-height: 1.5; }
+
+    .view-details-btn {
+      background: none;
+      border: none;
+      color: #4f46e5;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 0 0;
+      cursor: pointer;
+      display: block;
+    }
+
+    .history-labels {
+      display: none;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .history-labels.collapsed { display: none; }
+
+    .history-label-item {
+      font-size: 12px;
+      color: #555;
+      padding: 4px 8px;
+      background: #f8f9fa;
+      border-radius: 6px;
+    }
   </style>
 </head>
 <body>
@@ -459,7 +526,7 @@
     <div class="header-top">
       <h1>Equipment Labels</h1>
       <div class="header-right">
-        <button class="refresh-btn" id="refresh-btn" onclick="forceRefresh()" title="Refresh">&#8635;</button>
+        <button class="refresh-btn" id="refresh-btn" onclick="forceRefresh()">&#8635;</button>
         <button class="history-btn" onclick="showHistory()">History</button>
       </div>
     </div>
@@ -500,7 +567,10 @@
     <div class="modal-title" id="modal-title"></div>
     <div class="modal-subtitle" id="modal-subtitle"></div>
     <div id="checkout-info"></div>
-    <div class="modal-section-title">Labels in this packet</div>
+    <div class="modal-section-header">
+      <span class="modal-section-title">Labels in this packet</span>
+      <button class="toggle-select-btn" id="toggle-select-btn" onclick="toggleSelectAll()">Deselect All</button>
+    </div>
     <div class="label-list" id="label-list"></div>
     <div class="name-input-wrap">
       <label>Your Name</label>
@@ -514,13 +584,14 @@
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyJPW2W6A6-x_k_tHlq4ZV0ezyP4x5krPqwaOm9MR5OnE3nhJJCPp1-NRtCL2vqjfx4/exec";
   const CACHE_KEY  = "equipmentCache";
-  const CACHE_TTL  = 10 * 60 * 1000; // 10 minutes
+  const CACHE_TTL  = 10 * 60 * 1000;
   const ZONES      = ["EYD Zone 1", "EYD Zone 2", "MYD"];
 
   let activeZone    = "EYD Zone 1";
-  let allZoneData   = {};   // { "EYD Zone 1": [...], ... }
+  let allZoneData   = {};
   let checkoutsData = [];
   let currentModal  = null;
+  let allSelected   = true;
 
   // ── Zone toggle ──────────────────────────────────────────────────────────
   document.querySelectorAll(".zone-toggle button").forEach(btn => {
@@ -528,14 +599,14 @@
       activeZone = btn.dataset.zone;
       document.querySelectorAll(".zone-toggle button").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
-      render(); // instant -- data already loaded
+      render();
     });
   });
 
   document.getElementById("search").addEventListener("input", render);
   document.getElementById("filter").addEventListener("change", render);
 
-  // ── Cache helpers ─────────────────────────────────────────────────────────
+  // ── Cache ─────────────────────────────────────────────────────────────────
   function saveCache(data) {
     try { localStorage.setItem(CACHE_KEY, JSON.stringify({ data, ts: Date.now() })); } catch {}
   }
@@ -560,50 +631,32 @@
     return res.json();
   }
 
-  // ── Load all zones in parallel ────────────────────────────────────────────
   async function fetchAllZones() {
-    const results = await Promise.all(
-      ZONES.map(z => apiFetch({ action: "getEquipment", zone: z }))
-    );
+    const results = await Promise.all(ZONES.map(z => apiFetch({ action: "getEquipment", zone: z })));
     const data = {};
     ZONES.forEach((z, i) => data[z] = results[i].data || []);
     return data;
   }
 
+  // ── Init ──────────────────────────────────────────────────────────────────
   async function init() {
-    // 1. Try cache first -- show data immediately if available
     const cached = loadCache();
     if (cached) {
       allZoneData = cached;
-      // Also fetch checkouts
-      apiFetch({ action: "getCheckouts" }).then(r => {
-        checkoutsData = r.data || [];
-        render();
-      });
+      apiFetch({ action: "getCheckouts" }).then(r => { checkoutsData = r.data || []; render(); });
       render();
-      // Refresh in background silently
-      fetchAllZones().then(fresh => {
-        allZoneData = fresh;
-        saveCache(fresh);
-        render();
-      }).catch(() => {});
+      fetchAllZones().then(fresh => { allZoneData = fresh; saveCache(fresh); render(); }).catch(() => {});
       return;
     }
-
-    // 2. No cache -- show loading and fetch everything
     document.getElementById("list").innerHTML = `<div class="loading">Loading...</div>`;
     try {
-      const [zoneData, checkoutRes] = await Promise.all([
-        fetchAllZones(),
-        apiFetch({ action: "getCheckouts" })
-      ]);
+      const [zoneData, checkoutRes] = await Promise.all([fetchAllZones(), apiFetch({ action: "getCheckouts" })]);
       allZoneData   = zoneData;
       checkoutsData = checkoutRes.data || [];
       saveCache(zoneData);
       render();
     } catch {
-      document.getElementById("list").innerHTML =
-        `<div class="empty">Failed to load. Check your connection.</div>`;
+      document.getElementById("list").innerHTML = `<div class="empty">Failed to load. Check your connection.</div>`;
     }
   }
 
@@ -611,53 +664,17 @@
     const btn = document.getElementById("refresh-btn");
     btn.classList.add("spinning");
     try {
-      const [zoneData, checkoutRes] = await Promise.all([
-        fetchAllZones(),
-        apiFetch({ action: "getCheckouts" })
-      ]);
+      const [zoneData, checkoutRes] = await Promise.all([fetchAllZones(), apiFetch({ action: "getCheckouts" })]);
       allZoneData   = zoneData;
       checkoutsData = checkoutRes.data || [];
       saveCache(zoneData);
       render();
-    } catch {
-      alert("Refresh failed. Check your connection.");
-    } finally {
-      btn.classList.remove("spinning");
-    }
-  }
-
-  async function loadHistory() {
-    document.getElementById("history-list").innerHTML = `<div class="loading">Loading...</div>`;
-    try {
-      const res     = await apiFetch({ action: "getHistory" });
-      const history = (res.data || []).slice().reverse();
-      if (!history.length) {
-        document.getElementById("history-list").innerHTML = `<div class="empty">No history yet.</div>`;
-        return;
-      }
-      document.getElementById("history-list").innerHTML = history.map(h => {
-        const isOut = h.action === "CHECKOUT";
-        const date  = h.timestamp ? new Date(h.timestamp).toLocaleString() : "";
-        return `
-          <div class="history-card">
-            <span class="history-action ${isOut ? "action-checkout" : "action-checkin"}">${h.action}</span>
-            <div class="history-packet">${h.packet || ""}</div>
-            <div class="history-meta">
-              ${h.name || ""} &middot; ${h.zone || ""}<br>${date}
-              ${h.labels ? `<br>Labels: ${h.labels}` : ""}
-            </div>
-          </div>`;
-      }).join("");
-    } catch {
-      document.getElementById("history-list").innerHTML = `<div class="empty">Failed to load history.</div>`;
-    }
+    } catch { alert("Refresh failed. Check your connection."); }
+    finally { btn.classList.remove("spinning"); }
   }
 
   // ── Render ────────────────────────────────────────────────────────────────
-  const badgeClass = {
-    AC: "badge-AC", Control: "badge-Control", DC: "badge-DC",
-    Modbus: "badge-Modbus", MV: "badge-MV"
-  };
+  const badgeClass = { AC: "badge-AC", Control: "badge-Control", DC: "badge-DC", Modbus: "badge-Modbus", MV: "badge-MV" };
 
   function getCheckout(packet) {
     return checkoutsData.find(c => c.packet === packet && c.zone === activeZone) || null;
@@ -673,22 +690,13 @@
         (item.source && item.source.toLowerCase().includes(query)) ||
         (item.dest   && item.dest.toLowerCase().includes(query))   ||
         (item.packet && item.packet.toLowerCase().includes(query));
-      const matchSystem = !system || item.system === system;
-      return matchSearch && matchSystem;
+      return matchSearch && (!system || item.system === system);
     });
 
-    document.getElementById("results-count").textContent =
-      `${filtered.length} of ${zoneData.length} results`;
+    document.getElementById("results-count").textContent = `${filtered.length} of ${zoneData.length} results`;
 
-    if (!zoneData.length) {
-      document.getElementById("list").innerHTML = `<div class="loading">Loading...</div>`;
-      return;
-    }
-
-    if (!filtered.length) {
-      document.getElementById("list").innerHTML = `<div class="empty">No results found.</div>`;
-      return;
-    }
+    if (!zoneData.length) { document.getElementById("list").innerHTML = `<div class="loading">Loading...</div>`; return; }
+    if (!filtered.length) { document.getElementById("list").innerHTML = `<div class="empty">No results found.</div>`; return; }
 
     document.getElementById("list").innerHTML = filtered.map(item => {
       const co = item.packet ? getCheckout(item.packet) : null;
@@ -696,7 +704,6 @@
         ? `<span class="status-badge status-checkedout">Out: ${co.checkedOutBy}</span>`
         : `<span class="status-badge status-available">Available</span>`;
       const safeItem = encodeURIComponent(JSON.stringify(item));
-
       return `
         <div class="card" onclick="openModal(decodeURIComponent('${safeItem}'))">
           <div class="drawer-block">
@@ -704,9 +711,7 @@
             <span class="drawer-number">${item.drawer || "–"}</span>
           </div>
           <div class="card-body">
-            <div class="card-main">
-              ${item.source || "–"}<span class="card-arrow">→</span><span class="card-dest-text">${item.dest || "–"}</span>
-            </div>
+            <div class="card-main">${item.source || "–"}<span class="card-arrow">→</span><span class="card-dest-text">${item.dest || "–"}</span></div>
             <div class="card-packet">${item.packet || "–"}</div>
             <div class="card-footer-row">
               <span class="badge ${badgeClass[item.system] || ""}">${item.system || ""}</span>
@@ -718,25 +723,27 @@
   }
 
   // ── Modal ─────────────────────────────────────────────────────────────────
-  function openModal(itemJson) {
-    const item   = typeof itemJson === "string" ? JSON.parse(itemJson) : itemJson;
-    const packet = item.packet || "";
-    const co     = packet ? getCheckout(packet) : null;
-    const zoneData = allZoneData[activeZone] || [];
-    const labels = packet ? zoneData.filter(e => e.packet === packet) : [item];
+  function openModal(itemJson, overrideZone) {
+    const item     = typeof itemJson === "string" ? JSON.parse(itemJson) : itemJson;
+    const zone     = overrideZone || activeZone;
+    const packet   = item.packet || "";
+    const co       = checkoutsData.find(c => c.packet === packet && c.zone === zone) || null;
+    const zoneData = allZoneData[zone] || [];
+    const labels   = packet ? zoneData.filter(e => e.packet === packet) : [item];
 
-    currentModal = { packet, zone: activeZone, isCheckedOut: !!co };
+    currentModal = { packet, zone, isCheckedOut: !!co };
+    allSelected  = true;
 
     document.getElementById("modal-title").textContent    = packet || `${item.source} → ${item.dest}`;
-    document.getElementById("modal-subtitle").textContent = `Drawer ${item.drawer || "–"} · ${activeZone}`;
+    document.getElementById("modal-subtitle").textContent = `Drawer ${item.drawer || "–"} · ${zone}`;
 
     const infoEl = document.getElementById("checkout-info");
     if (co) {
       const date = co.checkedOutAt ? new Date(co.checkedOutAt).toLocaleString() : "";
       infoEl.innerHTML = `<div class="checkout-info">Checked out by <strong>${co.checkedOutBy}</strong>${date ? " on " + date : ""}</div>`;
-    } else {
-      infoEl.innerHTML = "";
-    }
+    } else { infoEl.innerHTML = ""; }
+
+    document.getElementById("toggle-select-btn").textContent = "Deselect All";
 
     document.getElementById("label-list").innerHTML = labels.map((l, i) => `
       <label class="label-item">
@@ -756,6 +763,12 @@
     document.getElementById("modal-overlay").classList.add("active");
   }
 
+  function toggleSelectAll() {
+    allSelected = !allSelected;
+    document.querySelectorAll("#label-list input[type='checkbox']").forEach(cb => cb.checked = allSelected);
+    document.getElementById("toggle-select-btn").textContent = allSelected ? "Deselect All" : "Select All";
+  }
+
   function closeModal() {
     document.getElementById("modal-overlay").classList.remove("active");
     currentModal = null;
@@ -769,10 +782,7 @@
     const name = document.getElementById("name-input").value.trim();
     if (!name) { alert("Please enter your name."); return; }
 
-    const selected = Array.from(
-      document.querySelectorAll("#label-list input[type='checkbox']:checked")
-    ).map(cb => cb.value);
-
+    const selected = Array.from(document.querySelectorAll("#label-list input[type='checkbox']:checked")).map(cb => cb.value);
     if (!selected.length) { alert("Please select at least one label."); return; }
 
     const btn = document.getElementById("btn-action");
@@ -780,14 +790,7 @@
     btn.disabled    = true;
 
     try {
-      await apiFetch({
-        action: currentModal.isCheckedOut ? "checkin" : "checkout",
-        packet: currentModal.packet,
-        labels: selected,
-        name,
-        zone:   currentModal.zone
-      });
-      // Refresh checkouts only (equipment data doesn't change)
+      await apiFetch({ action: currentModal.isCheckedOut ? "checkin" : "checkout", packet: currentModal.packet, labels: selected, name, zone: currentModal.zone });
       const checkoutRes = await apiFetch({ action: "getCheckouts" });
       checkoutsData = checkoutRes.data || [];
       closeModal();
@@ -797,6 +800,80 @@
       btn.textContent = currentModal.isCheckedOut ? "Check In" : "Check Out";
       btn.disabled    = false;
     }
+  }
+
+  // ── History ───────────────────────────────────────────────────────────────
+  async function loadHistory() {
+    document.getElementById("history-list").innerHTML = `<div class="loading">Loading...</div>`;
+    try {
+      const [histRes, checkoutRes] = await Promise.all([
+        apiFetch({ action: "getHistory" }),
+        apiFetch({ action: "getCheckouts" })
+      ]);
+      checkoutsData = checkoutRes.data || [];
+      const history = (histRes.data || []).slice().reverse();
+
+      if (!history.length) {
+        document.getElementById("history-list").innerHTML = `<div class="empty">No history yet.</div>`;
+        return;
+      }
+
+      document.getElementById("history-list").innerHTML = history.map((h, idx) => {
+        const isOut    = h.action === "CHECKOUT";
+        const date     = h.timestamp ? new Date(h.timestamp).toLocaleString() : "";
+        const labelArr = h.labels ? h.labels.split(", ").filter(Boolean) : [];
+
+        // Full vs partial: compare checked-out labels to total labels in that zone
+        const zoneData   = allZoneData[h.zone] || [];
+        const totalCount = h.packet ? zoneData.filter(e => e.packet === h.packet).length : 0;
+        const checkedCount = labelArr.length;
+        const isPartial  = totalCount > 0 && checkedCount < totalCount;
+        const partialBadge = isPartial
+          ? `<span class="partial-badge">Partial ${checkedCount}/${totalCount}</span>`
+          : (totalCount > 0 ? `<span class="partial-badge" style="background:#e0e7ff;color:#3730a3">Full</span>` : "");
+
+        // Show Check In button only if this packet is still checked out
+        const stillOut = isOut && checkoutsData.some(c => c.packet === h.packet && c.zone === h.zone);
+        const checkinBtn = stillOut
+          ? `<button class="history-checkin-btn" onclick="checkinFromHistory('${encodeURIComponent(h.packet)}','${h.zone}')">Check In</button>`
+          : "";
+
+        const labelsHtml = labelArr.map(l => `<div class="history-label-item">${l}</div>`).join("");
+
+        return `
+          <div class="history-card">
+            <div class="history-card-top">
+              <div class="history-badges">
+                <span class="history-action ${isOut ? "action-checkout" : "action-checkin"}">${h.action}</span>
+                ${partialBadge}
+              </div>
+              ${checkinBtn}
+            </div>
+            <div class="history-packet">${h.packet || ""}</div>
+            <div class="history-meta">${h.name || ""} &middot; ${h.zone || ""}<br>${date}</div>
+            ${labelArr.length ? `
+              <button class="view-details-btn" onclick="toggleDetails(this)">View Details ▾</button>
+              <div class="history-labels collapsed">${labelsHtml}</div>
+            ` : ""}
+          </div>`;
+      }).join("");
+    } catch {
+      document.getElementById("history-list").innerHTML = `<div class="empty">Failed to load history.</div>`;
+    }
+  }
+
+  function toggleDetails(btn) {
+    const labels = btn.nextElementSibling;
+    const collapsed = labels.classList.toggle("collapsed");
+    btn.textContent = collapsed ? "View Details ▾" : "Hide Details ▴";
+  }
+
+  function checkinFromHistory(encodedPacket, zone) {
+    const packet   = decodeURIComponent(encodedPacket);
+    const zoneData = allZoneData[zone] || [];
+    const labels   = zoneData.filter(e => e.packet === packet);
+    const fakeItem = { packet, zone, drawer: labels[0]?.drawer || "" };
+    openModal(fakeItem, zone);
   }
 
   // ── Views ─────────────────────────────────────────────────────────────────
@@ -811,7 +888,6 @@
     document.getElementById("view-main").classList.add("active");
   }
 
-  // ── Init ──────────────────────────────────────────────────────────────────
   init();
 </script>
 
