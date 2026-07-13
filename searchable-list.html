@@ -730,7 +730,9 @@
 
     closeModal();
     render();
-    if (saved.fromHistory) loadHistory();
+    // Use renderHistory (not loadHistory) here so we don't refetch stale
+    // server data before the check-in request has been sent
+    if (saved.fromHistory) renderHistory();
 
     // Sync to server
     try {
