@@ -2,1324 +2,768 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Equipment List</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Equipment Labels</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --ink: #16181d;
-      --panel: #1f2128;
-      --panel-2: #2a2d36;
-      --accent: #5b8def;
-      --muted: #8b8f9a;
-      --line: #eceef1;
-      --bg: #eef0f3;
-    }
-
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--bg);
-      color: var(--ink);
+      background: #f2f4f7;
+      color: #1a1a2e;
       min-height: 100vh;
-      -webkit-font-smoothing: antialiased;
     }
+
+    .view { display: none; }
+    .view.active { display: block; }
 
     /* ── Header ── */
     header {
-      background: var(--ink);
+      background: #1a1a2e;
       color: #fff;
-      padding: 14px 14px 12px;
+      padding: 16px 16px 10px;
       position: sticky;
       top: 0;
       z-index: 10;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
     }
 
-    header h1 {
-      font-size: 15px;
-      font-weight: 600;
-      letter-spacing: 0.2px;
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 12px;
-      color: #fff;
     }
 
+    header h1 { font-size: 18px; font-weight: 700; }
+
+    .history-btn {
+      background: #2e2e4a;
+      border: none;
+      color: #aaa;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* ── Zone toggle ── */
     .zone-toggle {
       display: flex;
-      background: var(--panel);
-      border-radius: 9px;
-      padding: 3px;
-      gap: 3px;
-      margin-bottom: 9px;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 10px;
     }
 
     .zone-toggle button {
       flex: 1;
-      padding: 9px 4px;
+      padding: 10px 4px;
       border: none;
-      background: transparent;
-      color: var(--muted);
-      font-size: 12px;
+      background: #2e2e4a;
+      color: #888aaa;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
-      border-radius: 6px;
+      border-right: 1px solid #1a1a2e;
       transition: background 0.15s, color 0.15s;
     }
 
-    .zone-toggle button.active {
-      background: var(--accent);
-      color: #fff;
-      box-shadow: 0 1px 4px rgba(91,141,239,0.4);
-    }
+    .zone-toggle button:last-child { border-right: none; }
+    .zone-toggle button.active { background: #4f46e5; color: #fff; }
 
-    .controls {
-      display: flex;
-      gap: 8px;
-    }
+    /* ── Controls ── */
+    .controls { display: flex; gap: 8px; }
 
     input[type="text"], select {
+      flex: 1;
+      min-width: 0;
       padding: 10px 12px;
       border: none;
       border-radius: 8px;
-      font-size: 14px;
-      background: var(--panel);
+      font-size: 15px;
+      background: #2e2e4a;
       color: #fff;
       outline: none;
-      min-width: 0;
+      -webkit-appearance: none;
     }
 
-    input[type="text"] { flex: 1; }
-    input[type="text"]::placeholder { color: var(--muted); }
-    select { flex: 0 0 122px; font-weight: 600; }
-    select option { background: var(--panel); }
+    input[type="text"]::placeholder { color: #888aaa; }
+    select option { background: #2e2e4a; }
 
     #results-count {
-      font-size: 11px;
-      color: var(--muted);
-      padding: 9px 2px 1px;
-      letter-spacing: 0.2px;
+      font-size: 12px;
+      color: #888aaa;
+      padding: 8px 2px 0;
     }
 
     /* ── List ── */
     .list {
-      padding: 10px 12px 24px;
+      padding: 12px 12px;
       display: flex;
       flex-direction: column;
-      gap: 9px;
+      gap: 8px;
     }
 
+    /* ── Card ── */
     .card {
       background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(20,24,35,0.07);
-      display: flex;
+      border-radius: 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
       overflow: hidden;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.1s;
     }
 
-    /* Left rail: the drawer — the answer */
-    .drawer {
-      background: var(--ink);
-      color: #fff;
-      width: 58px;
-      min-width: 58px;
+    .card:active { transform: scale(0.985); }
+
+    .card-top { display: flex; align-items: stretch; }
+
+    .card-identifiers {
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .drawer-block {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 2px;
-      position: relative;
+      background: #1a1a2e;
+      color: #fff;
+      width: 58px;
+      padding: 10px 0;
+      flex: 1;
     }
 
-    .drawer::after {
-      content: "";
-      position: absolute;
-      right: 0; top: 12%;
-      height: 76%;
-      width: 3px;
-      background: var(--accent);
-      border-radius: 3px;
+    .packet-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #2e2e4a;
+      color: #fff;
+      width: 58px;
+      padding: 6px 4px;
+      border-top: 1px solid #1a1a2e;
+      flex: 1;
     }
 
-    .drawer-label {
-      font-size: 7.5px;
-      font-weight: 700;
+    .block-label {
+      font-size: 8px;
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.7px;
-      color: var(--muted);
+      letter-spacing: 0.5px;
+      color: #888aaa;
+      margin-bottom: 3px;
     }
 
-    .drawer-number {
-      font-size: 30px;
-      font-weight: 800;
-      line-height: 0.9;
+    .drawer-number { font-size: 24px; font-weight: 700; line-height: 1; }
+
+    .packet-name {
+      font-size: 7.5px;
+      font-weight: 600;
+      color: #ccc;
+      text-align: center;
+      line-height: 1.3;
+      word-break: break-all;
     }
 
-    /* Right body */
-    .body {
+    .card-body {
       flex: 1;
       min-width: 0;
+      padding: 10px 10px 10px 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .equip-row { display: flex; flex-direction: column; gap: 1px; }
+
+    .equip-label {
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #bbb;
+    }
+
+    .equip-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1a1a2e;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .equip-dest {
+      font-size: 12px;
+      color: #888;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 10px 7px 12px;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    /* ── Badges ── */
+    .badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 20px;
+    }
+
+    .badge-AC      { background: #dbeafe; color: #1e40af; }
+    .badge-Control { background: #ede9fe; color: #5b21b6; }
+    .badge-DC      { background: #fef3c7; color: #92400e; }
+    .badge-Modbus  { background: #d1fae5; color: #065f46; }
+    .badge-MV      { background: #fee2e2; color: #991b1b; }
+
+    .status-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 20px;
+      max-width: 160px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .status-available  { background: #d1fae5; color: #065f46; }
+    .status-checkedout { background: #fee2e2; color: #991b1b; }
+
+    /* ── States ── */
+    .empty, .loading {
+      text-align: center;
+      color: #999;
+      padding: 48px 16px;
+      font-size: 15px;
+    }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 100;
+      align-items: flex-end;
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .modal {
+      background: #fff;
+      border-radius: 18px 18px 0 0;
+      width: 100%;
+      max-height: 88vh;
+      overflow-y: auto;
+      padding: 0 16px 36px;
+    }
+
+    .modal-handle {
+      width: 40px;
+      height: 4px;
+      background: #ddd;
+      border-radius: 2px;
+      margin: 14px auto 16px;
+    }
+
+    .modal-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 3px;
+      word-break: break-word;
+    }
+
+    .modal-subtitle {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 16px;
+    }
+
+    .modal-section-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #aaa;
+      margin-bottom: 8px;
+    }
+
+    .checkout-info {
+      background: #fff8e1;
+      border-left: 3px solid #f59e0b;
+      border-radius: 6px;
       padding: 10px 12px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: #78350f;
+    }
+
+    .label-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .label-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .label-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      accent-color: #4f46e5;
+    }
+
+    .label-item-text { flex: 1; min-width: 0; }
+
+    .label-source {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1a1a2e;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .label-dest {
+      font-size: 12px;
+      color: #888;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .name-input-wrap { margin-bottom: 14px; }
+
+    .name-input-wrap label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #aaa;
+      margin-bottom: 6px;
+    }
+
+    .name-input-wrap input {
+      width: 100%;
+      padding: 13px 12px;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 15px;
+      outline: none;
+      color: #1a1a2e;
+    }
+
+    .name-input-wrap input:focus { border-color: #4f46e5; }
+
+    .btn {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 8px;
+    }
+
+    .btn:disabled { opacity: 0.6; }
+    .btn-checkout { background: #4f46e5; color: #fff; }
+    .btn-checkin  { background: #059669; color: #fff; }
+    .btn-cancel   { background: #f2f4f7; color: #666; }
+
+    /* ── History view ── */
+    .history-header {
+      background: #1a1a2e;
+      color: #fff;
+      padding: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    }
+
+    .back-btn {
+      background: #2e2e4a;
+      border: none;
+      color: #aaa;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .history-header h1 { font-size: 18px; font-weight: 700; }
+
+    .history-list {
+      padding: 12px;
       display: flex;
       flex-direction: column;
       gap: 8px;
     }
 
-    /* Row 1: connection (from -> to) + system badge */
-    .conn-head {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 8px;
+    .history-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 12px 14px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07);
     }
 
-    .conn {
-      min-width: 0;
-      flex: 1;
-      display: grid;
-      grid-template-columns: 28px 1fr;
-      row-gap: 2px;
-      column-gap: 7px;
-      align-items: baseline;
-    }
-
-    .conn-tag {
-      font-size: 8.5px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      color: var(--muted);
-      padding-top: 2px;
-    }
-
-    .conn-from {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--ink);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      letter-spacing: -0.2px;
-    }
-
-    .conn-to {
-      font-size: 13px;
-      font-weight: 500;
-      color: #5c606b;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .badge {
+    .history-action {
+      display: inline-block;
       font-size: 10px;
       font-weight: 700;
-      padding: 4px 9px;
-      border-radius: 6px;
-      white-space: nowrap;
-      flex-shrink: 0;
-      letter-spacing: 0.2px;
+      padding: 2px 8px;
+      border-radius: 20px;
+      margin-bottom: 6px;
+      letter-spacing: 0.3px;
     }
 
-    .badge-AC      { background: #e3edff; color: #1d4ed8; }
-    .badge-Control { background: #efe8ff; color: #6d28d9; }
-    .badge-DC      { background: #fef0d4; color: #b45309; }
-    .badge-Modbus  { background: #d6f5e3; color: #047857; }
-    .badge-MV      { background: #ffe1e1; color: #be123c; }
+    .action-checkout { background: #fee2e2; color: #991b1b; }
+    .action-checkin  { background: #d1fae5; color: #065f46; }
 
-    /* Row 2: packet */
-    .packet {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      padding-top: 7px;
-      border-top: 1px solid var(--line);
-    }
-
-    .packet-tag {
-      font-size: 8.5px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      color: var(--muted);
-      flex-shrink: 0;
-    }
-
-    .packet-name {
-      font-size: 11.5px;
+    .history-packet {
+      font-size: 13px;
       font-weight: 600;
-      color: #3a3e48;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      font-variant-numeric: tabular-nums;
+      margin-bottom: 3px;
+      word-break: break-word;
     }
 
-    .empty {
-      text-align: center;
-      color: var(--muted);
-      padding: 60px 16px;
-      font-size: 14px;
-    }
+    .history-meta { font-size: 12px; color: #888; line-height: 1.5; }
   </style>
 </head>
 <body>
 
-<header>
-  <h1>Equipment List</h1>
-  <div class="zone-toggle">
-    <button class="active" data-zone="EYD Zone 1">EYD Zone 1</button>
-    <button data-zone="EYD Zone 2">EYD Zone 2</button>
-    <button data-zone="MYD">MYD</button>
-  </div>
-  <div class="controls">
-    <input type="text" id="search" placeholder="Search source or destination..." />
-    <select id="filter">
-      <option value="">All Systems</option>
-      <option value="AC">AC</option>
-      <option value="Control">Control</option>
-      <option value="DC">DC</option>
-      <option value="Modbus">Modbus</option>
-      <option value="MV">MV</option>
-    </select>
-  </div>
-  <div id="results-count"></div>
-</header>
+<!-- ── MAIN VIEW ─────────────────────────────────────────────────────────── -->
+<div id="view-main" class="view active">
+  <header>
+    <div class="header-top">
+      <h1>Equipment Labels</h1>
+      <button class="history-btn" onclick="showHistory()">History</button>
+    </div>
+    <div class="zone-toggle">
+      <button class="active" data-zone="EYD Zone 1">EYD Zone 1</button>
+      <button data-zone="EYD Zone 2">EYD Zone 2</button>
+      <button data-zone="MYD">MYD</button>
+    </div>
+    <div class="controls">
+      <input type="text" id="search" placeholder="Search source or destination..." />
+      <select id="filter">
+        <option value="">All Systems</option>
+        <option value="AC">AC</option>
+        <option value="Control">Control</option>
+        <option value="DC">DC</option>
+        <option value="Modbus">Modbus</option>
+        <option value="MV">MV</option>
+      </select>
+    </div>
+    <div id="results-count"></div>
+  </header>
+  <div class="list" id="list"></div>
+</div>
 
-<div class="list" id="list"></div>
+<!-- ── HISTORY VIEW ──────────────────────────────────────────────────────── -->
+<div id="view-history" class="view">
+  <div class="history-header">
+    <button class="back-btn" onclick="showMain()">&#8592; Back</button>
+    <h1>Checkout History</h1>
+  </div>
+  <div class="history-list" id="history-list"></div>
+</div>
+
+<!-- ── MODAL ─────────────────────────────────────────────────────────────── -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOnOverlay(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title"  id="modal-title"></div>
+    <div class="modal-subtitle" id="modal-subtitle"></div>
+    <div id="checkout-info"></div>
+    <div class="modal-section-title">Labels in this packet</div>
+    <div class="label-list" id="label-list"></div>
+    <div class="name-input-wrap">
+      <label>Your Name</label>
+      <input type="text" id="name-input" placeholder="Enter your name..." autocomplete="name" />
+    </div>
+    <button class="btn" id="btn-action" onclick="submitAction()"></button>
+    <button class="btn btn-cancel" onclick="closeModal()">Cancel</button>
+  </div>
+</div>
 
 <script>
-  // ─── YOUR DATA GOES HERE ───────────────────────────────────────────────────
-  const DATA = [
-    { source: "ELEC-XFMR-A", dest: "SSS-A-BDC", system: "AC", zone: "EYD Zone 1", drawer: "", packet: "EY05-ELEC-XFMR-A to SSS-A-BDC" },
-    { source: "ELEC-XFMR-B", dest: "SSS-B-BDC", system: "AC", zone: "EYD Zone 1", drawer: "", packet: "EY05-ELEC-XFMR-B to SSS-B-BDC" },
-    { source: "PERUN-A6", dest: "MYD-SDC-A", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-Perun to MYD-SDC Controls" },
-    { source: "PERUN-A6", dest: "SSS-A-52UA", system: "MV", zone: "EYD Zone 1", drawer: 1, packet: "EY05-PERUN-A6 to SSS-A" },
-    { source: "PERUN-A4", dest: "SSS-B-52UA", system: "MV", zone: "EYD Zone 1", drawer: 1, packet: "EY05-PERUN-A4 to SSS-B" },
-    { source: "PERUN-B6", dest: "MYD-SDC-B", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-Perun to MYD-SDC Controls" },
-    { source: "PERUN-B6", dest: "SSS-A-52UB", system: "MV", zone: "EYD Zone 1", drawer: 1, packet: "EY05-PERUN-B6 to SSS-A" },
-    { source: "PERUN-B4", dest: "SSS-B-52UB", system: "MV", zone: "EYD Zone 1", drawer: 1, packet: "EY05-PERUN-B4 to SSS-B" },
-    { source: "USS-RMU-1", dest: "USS-RMU-2", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-1", dest: "USS-RMU-2", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-1-52RB", dest: "USS-RMU-2-52RA", system: "MV", zone: "EYD Zone 1", drawer: 2, packet: "EY05-USS-RMU 1-2 Jumpers" },
-    { source: "USS-RMU-3", dest: "USS-RMU-4", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-3", dest: "USS-RMU-4", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-3-52RB", dest: "USS-RMU-4-52RA", system: "MV", zone: "EYD Zone 1", drawer: 2, packet: "EY05-USS-RMU 3-5 Jumpers" },
-    { source: "USS-RMU-4", dest: "USS-RMU-5", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-4", dest: "USS-RMU-5", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-4-52RB", dest: "USS-RMU-5-52RA", system: "MV", zone: "EYD Zone 1", drawer: 2, packet: "EY05-USS-RMU 3-5 Jumpers" },
-    { source: "USS-RMU-6", dest: "USS-RMU-7", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-6", dest: "USS-RMU-7", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-6-52RB", dest: "USS-RMU-7-52RA", system: "MV", zone: "EYD Zone 1", drawer: 2, packet: "EY05-USS-RMU 6-8 Jumpers" },
-    { source: "USS-RMU-7", dest: "USS-RMU-8", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-7", dest: "USS-RMU-8", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-7-52RB", dest: "USS-RMU-8-52RA", system: "MV", zone: "EYD Zone 1", drawer: 2, packet: "EY05-USS-RMU 6-8 Jumpers" },
-    { source: "USS-RMU-9", dest: "USS-RMU-10", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-9", dest: "USS-RMU-10", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-9-52RB", dest: "USS-RMU-10-52RA", system: "MV", zone: "EYD Zone 1", drawer: 2, packet: "EY05-USS-RMU 9-11 Jumpers" },
-    { source: "USS-RMU-10", dest: "USS-RMU-11", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-10", dest: "USS-RMU-11", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-10-52RB", dest: "USS-RMU-11-52RA", system: "MV", zone: "EYD Zone 1", drawer: 2, packet: "EY05-USS-RMU 9-11 Jumpers" },
-    { source: "USS-RMU-12", dest: "USS-RMU-13", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-12", dest: "USS-RMU-13", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-12-52RB", dest: "USS-RMU-13-52RA", system: "MV", zone: "EYD Zone 1", drawer: 2, packet: "EY05-USS-RMU 12-14 Jumpers" },
-    { source: "USS-RMU-13", dest: "USS-RMU-14", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-13", dest: "USS-RMU-14", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-13-52RB", dest: "USS-RMU-14-52RA", system: "MV", zone: "EYD Zone 1", drawer: 2, packet: "EY05-USS-RMU 12-14 Jumpers" },
-    { source: "USS-RMU-15", dest: "USS-RMU-16", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-15", dest: "USS-RMU-16", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-15-52RB", dest: "USS-RMU-16-52RA", system: "MV", zone: "EYD Zone 1", drawer: 2, packet: "EY05-USS-RMU 15-17 Jumpers" },
-    { source: "USS-RMU-16", dest: "USS-RMU-17", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-16", dest: "USS-RMU-17", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-16-52RB", dest: "USS-RMU-17-52RA", system: "MV", zone: "EYD Zone 1", drawer: 2, packet: "EY05-USS-RMU 15-17 Jumpers" },
-    { source: "USS-RMU-18", dest: "USS-RMU-19", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-18", dest: "USS-RMU-19", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-18-52RB", dest: "USS-RMU-19-52RA", system: "MV", zone: "EYD Zone 1", drawer: 2, packet: "EY05-USS-RMU 18-20 Jumpers" },
-    { source: "USS-RMU-19", dest: "USS-RMU-20", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-19", dest: "USS-RMU-20", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-19-52RB", dest: "USS-RMU-20-52RA", system: "MV", zone: "EYD Zone 1", drawer: 2, packet: "EY05-USS-RMU 18-20 Jumpers" },
-    { source: "USS-RMU-21", dest: "USS-RMU-22", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-21", dest: "USS-RMU-22", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-21-52RB", dest: "USS-RMU-22-52RA", system: "MV", zone: "EYD Zone 1", drawer: 2, packet: "EY05-USS-RMU 21-23 Jumpers" },
-    { source: "USS-RMU-22", dest: "USS-RMU-23", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-22", dest: "USS-RMU-23", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-22-52RB", dest: "USS-RMU-23-52RA", system: "MV", zone: "EYD Zone 1", drawer: 2, packet: "EY05-USS-RMU 21-23 Jumpers" },
-    { source: "USS-RMU-24", dest: "USS-RMU-25", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-24", dest: "USS-RMU-25", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-24-52RB", dest: "USS-RMU-25-52RA", system: "MV", zone: "EYD Zone 1", drawer: 2, packet: "EY05-USS-RMU 24-26 Jumpers" },
-    { source: "USS-RMU-25", dest: "USS-RMU-26", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-25", dest: "USS-RMU-26", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-Controls Interconnects for USS" },
-    { source: "USS-RMU-25-52RB", dest: "USS-RMU-26-52RA", system: "MV", zone: "EYD Zone 1", drawer: 2, packet: "EY05-USS-RMU 24-26 Jumpers" },
-    { source: "RMU-PMDC-A", dest: "RMU-PMDC-B", system: "Control", zone: "EYD Zone 1", drawer: 1, packet: "EY05-PMDC-A to PMDC-B Controls" },
-    { source: "RMU-PMDC-A-52RB", dest: "RMU-PMDC-B-52RA", system: "MV", zone: "EYD Zone 1", drawer: 2, packet: "EY05-RMU-PMDC-A to RMU-PMDC-B" },
-    { source: "SSS-A-SWGR-52F02", dest: "USS-RMU-1-52RA", system: "MV", zone: "EYD Zone 1", drawer: 1, packet: "EY05-SSS-A-SWGR-52F02 to USS-RMU-1-52RA" },
-    { source: "SSS-A-SWGR-52F03", dest: "USS-RMU-3-52RA", system: "MV", zone: "EYD Zone 1", drawer: 1, packet: "EY05-SSS-A-SWGR-52F02 to USS-RMU-3-52RA" },
-    { source: "SSS-A-SWGR-52F04", dest: "USS-RMU-6-52RA", system: "MV", zone: "EYD Zone 1", drawer: 1, packet: "EY05-SSS-A-SWGR-52F04 to USS-RMU-6-52RA" },
-    { source: "SSS-A-SWGR-52F05", dest: "USS-RMU-9-52RA", system: "MV", zone: "EYD Zone 1", drawer: 1, packet: "EY05-SSS-A-SWGR-52F05 to USS-RMU-9-52RA" },
-    { source: "SSS-A-SWGR-52F06", dest: "USS-RMU-12-52RA", system: "MV", zone: "EYD Zone 1", drawer: 1, packet: "EY05-SSS-A-SWGR-52F06 to USS-RMU-12-52RA" },
-    { source: "SSS-A-SWGR-52F07", dest: "USS-RMU-15-52RA", system: "MV", zone: "EYD Zone 1", drawer: 1, packet: "EY05-SSS-A-SWGR-52F07 to USS-RMU-15-52RA" },
-    { source: "SSS-A-SWGR-52F08", dest: "USS-RMU-18-52RA", system: "MV", zone: "EYD Zone 1", drawer: 1, packet: "EY05-SSS-A-SWGR-52F08 to USS-RMU-18-52RA" },
-    { source: "SSS-A-SWGR-52F09", dest: "USS-RMU-21-52RA", system: "MV", zone: "EYD Zone 1", drawer: 1, packet: "EY05-SSS-A-SWGR-52F09 to USS-RMU-21-52RA" },
-    { source: "SSS-A-SWGR-52F10", dest: "USS-RMU-24-52RA", system: "MV", zone: "EYD Zone 1", drawer: 1, packet: "EY05-SSS-A-SWGR-52F10 to USS-RMU-24-52RA" },
-    { source: "SSS-A-SWGR-52F01", dest: "RMU-PMDC-A-52RA", system: "MV", zone: "EYD Zone 1", drawer: 1, packet: "EY05-SSS-A to RMU-PMDC-A" },
-    { source: "SSS-A-BDC", dest: "SSS-B-HVAC", system: "AC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-BDC to SSS-B-HVAC/MTS" },
-    { source: "SSS-B-BDC", dest: "SSS-A-HVAC", system: "AC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-B-BDC to SSS-A-HVAC/MTS" },
-    { source: "SSS-AC-A", dest: "USS-RMU-1", system: "AC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-AC-A to USS-RMU 1-13" },
-    { source: "SSS-AC-A", dest: "USS-RMU-2", system: "AC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-AC-A to USS-RMU 1-13" },
-    { source: "SSS-AC-A", dest: "USS-RMU-3", system: "AC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-AC-A to USS-RMU 1-13" },
-    { source: "SSS-AC-A", dest: "USS-RMU-4", system: "AC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-AC-A to USS-RMU 1-13" },
-    { source: "SSS-AC-A", dest: "USS-RMU-5", system: "AC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-AC-A to USS-RMU 1-13" },
-    { source: "SSS-AC-A", dest: "USS-RMU-6", system: "AC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-AC-A to USS-RMU 1-13" },
-    { source: "SSS-AC-A", dest: "USS-RMU-7", system: "AC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-AC-A to USS-RMU 1-13" },
-    { source: "SSS-AC-A", dest: "USS-RMU-8", system: "AC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-AC-A to USS-RMU 1-13" },
-    { source: "SSS-AC-A", dest: "USS-RMU-9", system: "AC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-AC-A to USS-RMU 1-13" },
-    { source: "SSS-AC-A", dest: "USS-RMU-10", system: "AC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-AC-A to USS-RMU 1-13" },
-    { source: "SSS-AC-A", dest: "USS-RMU-11", system: "AC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-AC-A to USS-RMU 1-13" },
-    { source: "SSS-AC-A", dest: "USS-RMU-12", system: "AC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-AC-A to USS-RMU 1-13" },
-    { source: "SSS-AC-A", dest: "USS-RMU-PMDC-A", system: "AC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-AC-A to RMU-PMDC-A" },
-    { source: "SSS-AC-A", dest: "USS-RMU-PMDC-B", system: "AC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-AC-A to RMU-PMDC-B" },
-    { source: "SSS-AC-B", dest: "USS-RMU-13", system: "AC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-AC-B to USS-RMU 13-26" },
-    { source: "SSS-AC-B", dest: "USS-RMU-14", system: "AC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-AC-B to USS-RMU 13-26" },
-    { source: "SSS-AC-B", dest: "USS-RMU-15", system: "AC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-AC-B to USS-RMU 13-26" },
-    { source: "SSS-AC-B", dest: "USS-RMU-16", system: "AC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-AC-B to USS-RMU 13-26" },
-    { source: "SSS-AC-B", dest: "USS-RMU-17", system: "AC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-AC-B to USS-RMU 13-26" },
-    { source: "SSS-AC-B", dest: "USS-RMU-18", system: "AC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-AC-B to USS-RMU 13-26" },
-    { source: "SSS-AC-B", dest: "USS-RMU-19", system: "AC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-AC-B to USS-RMU 13-26" },
-    { source: "SSS-AC-B", dest: "USS-RMU-20", system: "AC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-AC-B to USS-RMU 13-26" },
-    { source: "SSS-AC-B", dest: "USS-RMU-21", system: "AC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-AC-B to USS-RMU 13-26" },
-    { source: "SSS-AC-B", dest: "USS-RMU-22", system: "AC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-AC-B to USS-RMU 13-26" },
-    { source: "SSS-AC-B", dest: "USS-RMU-23", system: "AC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-AC-B to USS-RMU 13-26" },
-    { source: "SSS-AC-B", dest: "USS-RMU-24", system: "AC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-AC-B to USS-RMU 13-26" },
-    { source: "SSS-AC-B", dest: "USS-RMU-26", system: "AC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-AC-B to USS-RMU 13-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-1", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-2", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-3", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-4", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-5", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-6", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-7", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-8", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-9", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-10", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-11", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-12", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-13", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-14", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-15", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-16", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-17", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-18", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-19", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-20", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-21", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-22", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-23", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-24", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-25", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-26", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-PMDC-A", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-DCP-A to RMU-PMDC" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-PMDC-B", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-DCP-A to RMU-PMDC" },
-    { source: "SSS-A-DCP-A", dest: "SSS-B-DCP-B", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-DCP-A to SSS-B-DCP-B" },
-    { source: "SSS-A-MC", dest: "USS-RMU-1", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-MC to USS-RMU 1,3,6,9,12,15,18,21,24" },
-    { source: "SSS-A-MC", dest: "USS-RMU-3", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-MC to USS-RMU 1,3,6,9,12,15,18,21,24" },
-    { source: "SSS-A-MC", dest: "USS-RMU-6", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-MC to USS-RMU 1,3,6,9,12,15,18,21,24" },
-    { source: "SSS-A-MC", dest: "USS-RMU-9", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-MC to USS-RMU 1,3,6,9,12,15,18,21,24" },
-    { source: "SSS-A-MC", dest: "USS-RMU-12", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-MC to USS-RMU 1,3,6,9,12,15,18,21,24" },
-    { source: "SSS-A-MC", dest: "USS-RMU-15", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-MC to USS-RMU 1,3,6,9,12,15,18,21,24" },
-    { source: "SSS-A-MC", dest: "USS-RMU-18", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-MC to USS-RMU 1,3,6,9,12,15,18,21,24" },
-    { source: "SSS-A-MC", dest: "USS-RMU-21", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-MC to USS-RMU 1,3,6,9,12,15,18,21,24" },
-    { source: "SSS-A-MC", dest: "USS-RMU-24", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-MC to USS-RMU 1,3,6,9,12,15,18,21,24" },
-    { source: "SSS-A-MC", dest: "USS-RMU-PMDC-A", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-A-MC to RMU-PMDC Controls" },
-    { source: "SSS-A-SWGR-52F15", dest: "ELEC-XFMR-A", system: "MV", zone: "EYD Zone 1", drawer: 1, packet: "EY05-SSS-A-SWGR to ELEC-XFMR-A" },
-    { source: "SSS-B-SWGR-52F15", dest: "ELEC-XFMR-B", system: "MV", zone: "EYD Zone 1", drawer: 2, packet: "EY05-SSS-B-SWGR to ELEC-XFMR-B" },
-    { source: "SSS-B-SWGR-52F02", dest: "USS-RMU-2-52RB", system: "MV", zone: "EYD Zone 1", drawer: 2, packet: "EY05-SSS-B-SWGR-52F02 to USS-RMU-2-52RB" },
-    { source: "SSS-B-SWGR-52F03", dest: "USS-RMU-5-52RB", system: "MV", zone: "EYD Zone 1", drawer: 2, packet: "EY05-SSS-B-SWGR-52F03 to USS-RMU-5-52RB" },
-    { source: "SSS-B-SWGR-52F04", dest: "USS-RMU-8-52RB", system: "MV", zone: "EYD Zone 1", drawer: 2, packet: "EY05-SSS-B-SWGR-52F04 to USS-RMU-8-52RB" },
-    { source: "SSS-B-SWGR-52F05", dest: "USS-RMU-11-52RB", system: "MV", zone: "EYD Zone 1", drawer: 2, packet: "EY05-SSS-B-SWGR-52F05 to USS-RMU-11-52RB" },
-    { source: "SSS-B-SWGR-52F06", dest: "USS-RMU-14-52RB", system: "MV", zone: "EYD Zone 1", drawer: 2, packet: "EY05-SSS-B-SWGR-52F06 to USS-RMU-14-52RB" },
-    { source: "SSS-B-SWGR-52F07", dest: "USS-RMU-17-52RB", system: "MV", zone: "EYD Zone 1", drawer: 2, packet: "EY05-SSS-B-SWGR-52F07 to USS-RMU-17-52RB" },
-    { source: "SSS-B-SWGR-52F08", dest: "USS-RMU-20-52RB", system: "MV", zone: "EYD Zone 1", drawer: 2, packet: "EY05-SSS-B-SWGR-52F08 to USS-RMU-20-52RB" },
-    { source: "SSS-B-SWGR-52F09", dest: "USS-RMU-23-52RB", system: "MV", zone: "EYD Zone 1", drawer: 2, packet: "EY05-SSS-B-SWGR-52F09 to USS-RMU-23-52RB" },
-    { source: "SSS-B-SWGR-52F10", dest: "USS-RMU-26-52RB", system: "MV", zone: "EYD Zone 1", drawer: 2, packet: "EY05-SSS-B-SWGR-52F10 to USS-RMU-26-52RB" },
-    { source: "SSS-B-SWGR-52F01", dest: "RMU-PMDC-B-52RB", system: "MV", zone: "EYD Zone 1", drawer: 1, packet: "EY05-SSS-B to RMU-PMDC-B" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-1", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-2", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-3", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-4", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-5", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-6", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-7", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-8", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-9", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-10", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-11", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-12", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-13", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-14", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-15", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-16", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-17", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-18", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-19", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-20", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-21", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-22", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-23", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-24", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-25", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-26", system: "DC", zone: "EYD Zone 1", drawer: "", packet: "EY05-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SUBE2-BUS-A (TB-SSSA)", dest: "EY05-SWGR-SSS-A (TB-A1)", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-Perun to SSS-SWGR Controls" },
-    { source: "SUBE2-BUS-A (TB-SSSB)", dest: "EY05-SWGR-SSS-B (TB-B1)", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-Perun to SSS-SWGR Controls" },
-    { source: "SUBF2-BUS-B (TB-SSSA)", dest: "EY05-SWGR-SSS-A (TB-A1)", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-Perun to SSS-SWGR Controls" },
-    { source: "SUBF2-BUS-B (TB-SSSB)", dest: "EY05-SWGR-SSS-B (TB-B1)", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-Perun to SSS-SWGR Controls" },
-    { source: "USS-XFMR-1", dest: "USS-SWGR-1", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-2", dest: "USS-SWGR-2", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-3", dest: "USS-SWGR-3", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-4", dest: "USS-SWGR-4", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-5", dest: "USS-SWGR-5", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-6", dest: "USS-SWGR-6", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-7", dest: "USS-SWGR-7", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-8", dest: "USS-SWGR-8", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-9", dest: "USS-SWGR-9", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-10", dest: "USS-SWGR-10", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-11", dest: "USS-SWGR-11", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-12", dest: "USS-SWGR-12", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-13", dest: "USS-SWGR-13", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-14", dest: "USS-SWGR-14", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-15", dest: "USS-SWGR-15", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-16", dest: "USS-SWGR-16", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-17", dest: "USS-SWGR-17", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-18", dest: "USS-SWGR-18", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-19", dest: "USS-SWGR-19", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-20", dest: "USS-SWGR-20", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-21", dest: "USS-SWGR-21", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-22", dest: "USS-SWGR-22", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-23", dest: "USS-SWGR-23", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-24", dest: "USS-SWGR-24", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-25", dest: "USS-SWGR-25", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-26", dest: "USS-SWGR-26", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-1", dest: "USS-SWGR-1", system: "Modbus", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-2", dest: "USS-SWGR-2", system: "Modbus", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-3", dest: "USS-SWGR-3", system: "Modbus", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-4", dest: "USS-SWGR-4", system: "Modbus", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-5", dest: "USS-SWGR-5", system: "Modbus", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-6", dest: "USS-SWGR-6", system: "Modbus", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-7", dest: "USS-SWGR-7", system: "Modbus", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-8", dest: "USS-SWGR-8", system: "Modbus", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-9", dest: "USS-SWGR-9", system: "Modbus", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-10", dest: "USS-SWGR-10", system: "Modbus", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-11", dest: "USS-SWGR-11", system: "Modbus", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-12", dest: "USS-SWGR-12", system: "Modbus", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-13", dest: "USS-SWGR-13", system: "Modbus", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-14", dest: "USS-SWGR-14", system: "Modbus", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-15", dest: "USS-SWGR-15", system: "Modbus", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-16", dest: "USS-SWGR-16", system: "Modbus", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-17", dest: "USS-SWGR-17", system: "Modbus", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-18", dest: "USS-SWGR-18", system: "Modbus", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-19", dest: "USS-SWGR-19", system: "Modbus", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-20", dest: "USS-SWGR-20", system: "Modbus", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-21", dest: "USS-SWGR-21", system: "Modbus", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-22", dest: "USS-SWGR-22", system: "Modbus", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-23", dest: "USS-SWGR-23", system: "Modbus", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-24", dest: "USS-SWGR-24", system: "Modbus", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-25", dest: "USS-SWGR-25", system: "Modbus", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-26", dest: "USS-SWGR-26", system: "Modbus", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "SSS-B-MC", dest: "USS-RMU-2", system: "Control", zone: "EYD Zone 1", drawer: 2, packet: "EY05-SSS-B-MC to USS-RMU 2,5,8,11,14,17,20,23,26" },
-    { source: "SSS-B-MC", dest: "USS-RMU-5", system: "Control", zone: "EYD Zone 1", drawer: 2, packet: "EY05-SSS-B-MC to USS-RMU 2,5,8,11,14,17,20,23,26" },
-    { source: "SSS-B-MC", dest: "USS-RMU-8", system: "Control", zone: "EYD Zone 1", drawer: 2, packet: "EY05-SSS-B-MC to USS-RMU 2,5,8,11,14,17,20,23,26" },
-    { source: "SSS-B-MC", dest: "USS-RMU-11", system: "Control", zone: "EYD Zone 1", drawer: 2, packet: "EY05-SSS-B-MC to USS-RMU 2,5,8,11,14,17,20,23,26" },
-    { source: "SSS-B-MC", dest: "USS-RMU-14", system: "Control", zone: "EYD Zone 1", drawer: 2, packet: "EY05-SSS-B-MC to USS-RMU 2,5,8,11,14,17,20,23,26" },
-    { source: "SSS-B-MC", dest: "USS-RMU-17", system: "Control", zone: "EYD Zone 1", drawer: 2, packet: "EY05-SSS-B-MC to USS-RMU 2,5,8,11,14,17,20,23,26" },
-    { source: "SSS-B-MC", dest: "USS-RMU-20", system: "Control", zone: "EYD Zone 1", drawer: 2, packet: "EY05-SSS-B-MC to USS-RMU 2,5,8,11,14,17,20,23,26" },
-    { source: "SSS-B-MC", dest: "USS-RMU-23", system: "Control", zone: "EYD Zone 1", drawer: 2, packet: "EY05-SSS-B-MC to USS-RMU 2,5,8,11,14,17,20,23,26" },
-    { source: "SSS-B-MC", dest: "USS-RMU-26", system: "Control", zone: "EYD Zone 1", drawer: 2, packet: "EY05-SSS-B-MC to USS-RMU 2,5,8,11,14,17,20,23,26" },
-    { source: "USS-RMU-1", dest: "USS-XFMR-1", system: "CT", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-1", dest: "USS-XFMR-1", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-2", dest: "USS-XFMR-2", system: "CT", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-2", dest: "USS-XFMR-2", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-3", dest: "USS-XFMR-3", system: "CT", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-3", dest: "USS-XFMR-3", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-4", dest: "USS-XFMR-4", system: "CT", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-4", dest: "USS-XFMR-4", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-5", dest: "USS-XFMR-5", system: "CT", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-5", dest: "USS-XFMR-5", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-6", dest: "USS-XFMR-6", system: "CT", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-6", dest: "USS-XFMR-6", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-7", dest: "USS-XFMR-7", system: "CT", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-7", dest: "USS-XFMR-7", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-8", dest: "USS-XFMR-8", system: "CT", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-8", dest: "USS-XFMR-8", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-9", dest: "USS-XFMR-9", system: "CT", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-9", dest: "USS-XFMR-9", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-10", dest: "USS-XFMR-10", system: "CT", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-10", dest: "USS-XFMR-10", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-11", dest: "USS-XFMR-11", system: "CT", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-11", dest: "USS-XFMR-11", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-12", dest: "USS-XFMR-12", system: "CT", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-12", dest: "USS-XFMR-12", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-13", dest: "USS-XFMR-13", system: "CT", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-13", dest: "USS-XFMR-13", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-14", dest: "USS-XFMR-14", system: "CT", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-14", dest: "USS-XFMR-14", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-15", dest: "USS-XFMR-15", system: "CT", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-15", dest: "USS-XFMR-15", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-16", dest: "USS-XFMR-16", system: "CT", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-16", dest: "USS-XFMR-16", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-17", dest: "USS-XFMR-17", system: "CT", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-17", dest: "USS-XFMR-17", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-18", dest: "USS-XFMR-18", system: "CT", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-18", dest: "USS-XFMR-18", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-19", dest: "USS-XFMR-19", system: "CT", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-19", dest: "USS-XFMR-19", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-20", dest: "USS-XFMR-20", system: "CT", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-20", dest: "USS-XFMR-20", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-21", dest: "USS-XFMR-21", system: "CT", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-21", dest: "USS-XFMR-21", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-22", dest: "USS-XFMR-22", system: "CT", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-22", dest: "USS-XFMR-22", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-23", dest: "USS-XFMR-23", system: "CT", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-23", dest: "USS-XFMR-23", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-24", dest: "USS-XFMR-24", system: "CT", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-24", dest: "USS-XFMR-24", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-25", dest: "USS-XFMR-25", system: "CT", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-25", dest: "USS-XFMR-25", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-26", dest: "USS-XFMR-26", system: "CT", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-26", dest: "USS-XFMR-26", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-PMDC-A", dest: "XFMR-PMDC-A", system: "MV", zone: "EYD Zone 1", drawer: "", packet: "EY05-RMU-PMDC-A to XFMR-PMDC-A" },
-    { source: "USS-RMU-PMDC-B", dest: "XFMR-PMDC-B", system: "MV", zone: "EYD Zone 1", drawer: "", packet: "EY05-RMU-PMDC-B to XFMR-PMDC-B" },
-    { source: "USS-RMU-PMDC-A", dest: "USS-XFMR-PMDC-A", system: "CT", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-PMDC-A", dest: "USS-XFMR-PMDC-A", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-PMDC-B", dest: "USS-XFMR-PMDC-B", system: "CT", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-PMDC-B", dest: "USS-XFMR-PMDC-B", system: "Control", zone: "EYD Zone 1", drawer: "", packet: "" },
-    { source: "USS-RMU-1", dest: "USS-XFMR-1", system: "MV", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-RMU to USS-XFMR 1-2" },
-    { source: "USS-RMU-2", dest: "USS-XFMR-2", system: "MV", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-RMU to USS-XFMR 1-2" },
-    { source: "USS-RMU-3", dest: "USS-XFMR-3", system: "MV", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-RMU to USS-XFMR 3-5" },
-    { source: "USS-RMU-4", dest: "USS-XFMR-4", system: "MV", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-RMU to USS-XFMR 3-5" },
-    { source: "USS-RMU-5", dest: "USS-XFMR-5", system: "MV", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-RMU to USS-XFMR 3-5" },
-    { source: "USS-RMU-6", dest: "USS-XFMR-6", system: "MV", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-RMU to USS-XFMR 6-8" },
-    { source: "USS-RMU-7", dest: "USS-XFMR-7", system: "MV", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-RMU to USS-XFMR 6-8" },
-    { source: "USS-RMU-8", dest: "USS-XFMR-8", system: "MV", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-RMU to USS-XFMR 6-8" },
-    { source: "USS-RMU-9", dest: "USS-XFMR-9", system: "MV", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-RMU to USS-XFMR 9-11" },
-    { source: "USS-RMU-10", dest: "USS-XFMR-10", system: "MV", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-RMU to USS-XFMR 9-11" },
-    { source: "USS-RMU-11", dest: "USS-XFMR-11", system: "MV", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-RMU to USS-XFMR 9-11" },
-    { source: "USS-RMU-12", dest: "USS-XFMR-12", system: "MV", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-RMU to USS-XFMR 12-14" },
-    { source: "USS-RMU-13", dest: "USS-XFMR-13", system: "MV", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-RMU to USS-XFMR 12-14" },
-    { source: "USS-RMU-14", dest: "USS-XFMR-14", system: "MV", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-RMU to USS-XFMR 12-14" },
-    { source: "USS-RMU-15", dest: "USS-XFMR-15", system: "MV", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-RMU to USS-XFMR 15-17" },
-    { source: "USS-RMU-16", dest: "USS-XFMR-16", system: "MV", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-RMU to USS-XFMR 15-17" },
-    { source: "USS-RMU-17", dest: "USS-XFMR-17", system: "MV", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-RMU to USS-XFMR 15-17" },
-    { source: "USS-RMU-18", dest: "USS-XFMR-18", system: "MV", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-RMU to USS-XFMR 18-20" },
-    { source: "USS-RMU-19", dest: "USS-XFMR-19", system: "MV", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-RMU to USS-XFMR 18-20" },
-    { source: "USS-RMU-20", dest: "USS-XFMR-20", system: "MV", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-RMU to USS-XFMR 18-20" },
-    { source: "USS-RMU-21", dest: "USS-XFMR-21", system: "MV", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-RMU to USS-XFMR 21-23" },
-    { source: "USS-RMU-22", dest: "USS-XFMR-22", system: "MV", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-RMU to USS-XFMR 21-23" },
-    { source: "USS-RMU-23", dest: "USS-XFMR-23", system: "MV", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-RMU to USS-XFMR 21-23" },
-    { source: "USS-RMU-24", dest: "USS-XFMR-24", system: "MV", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-RMU to USS-XFMR 24-26" },
-    { source: "USS-RMU-25", dest: "USS-XFMR-25", system: "MV", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-RMU to USS-XFMR 24-26" },
-    { source: "USS-RMU-26", dest: "USS-XFMR-26", system: "MV", zone: "EYD Zone 1", drawer: "", packet: "EY05-USS-RMU to USS-XFMR 24-26" },
-    { source: "ELEC-XFMR-A", dest: "SSS-A-BDC", system: "AC", zone: "EYD Zone 2", drawer: 5, packet: "EY06-ELEC-XFMR-A to SSS-A-BDC" },
-    { source: "ELEC-XFMR-B", dest: "SSS-B-BDC", system: "AC", zone: "EYD Zone 2", drawer: 5, packet: "EY06-ELEC-XFMR-B to SSS-B-BDC" },
-    { source: "PERUN-A5", dest: "SSS-A-52UA", system: "MV", zone: "EYD Zone 2", drawer: 6, packet: "EY06-PERUN-A5 to SSS-A-52UA" },
-    { source: "PERUN-A3", dest: "SSS-B-52UA", system: "MV", zone: "EYD Zone 2", drawer: 6, packet: "EY06-PERUN-A3 to SSS-B-52UA" },
-    { source: "PERUN-B5", dest: "SSS-A-52UB", system: "MV", zone: "EYD Zone 2", drawer: 6, packet: "EY06-PERUN-B5 to SSS-A-52UB" },
-    { source: "PERUN-B3", dest: "SSS-B-52UB", system: "MV", zone: "EYD Zone 2", drawer: 6, packet: "EY06-PERUN-B3 to SSS-B-52UB" },
-    { source: "PERUN-A3", dest: "SSS-A-52UA", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "EY06-Perun to SDC Controls" },
-    { source: "USS-RMU-1", dest: "USS-RMU-2", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-1", dest: "USS-RMU-2", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-1-52RB", dest: "USS-RMU-2-52RA", system: "MV", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-RMU 1-2 Jumpers" },
-    { source: "USS-RMU-3", dest: "USS-RMU-4", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-3", dest: "USS-RMU-4", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-3-52RB", dest: "USS-RMU-4-52RA", system: "MV", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-RMU 3-5 Jumpers" },
-    { source: "USS-RMU-4", dest: "USS-RMU-5", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-4", dest: "USS-RMU-5", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-4-52RB", dest: "USS-RMU-5-52RA", system: "MV", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-RMU 3-5 Jumpers" },
-    { source: "USS-RMU-6", dest: "USS-RMU-7", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-6", dest: "USS-RMU-7", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-6-52RB", dest: "USS-RMU-7-52RA", system: "MV", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-RMU 6-8 Jumpers" },
-    { source: "USS-RMU-7", dest: "USS-RMU-8", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-7", dest: "USS-RMU-8", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-7-52RB", dest: "USS-RMU-8-52RA", system: "MV", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-RMU 6-8 Jumpers" },
-    { source: "USS-RMU-9", dest: "USS-RMU-10", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-9", dest: "USS-RMU-10", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-9-52RB", dest: "USS-RMU-10-52RA", system: "MV", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-RMU 9-11 Jumpers" },
-    { source: "USS-RMU-10", dest: "USS-RMU-11", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-10", dest: "USS-RMU-11", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-10-52RB", dest: "USS-RMU-11-52RA", system: "MV", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-RMU 9-11 Jumpers" },
-    { source: "USS-RMU-12", dest: "USS-RMU-13", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-12", dest: "USS-RMU-13", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-12-52RB", dest: "USS-RMU-13-52RA", system: "MV", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-RMU 12-14 Jumpers" },
-    { source: "USS-RMU-13", dest: "USS-RMU-14", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-13", dest: "USS-RMU-14", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-13-52RB", dest: "USS-RMU-14-52RA", system: "MV", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-RMU 12-14 Jumpers" },
-    { source: "USS-RMU-15", dest: "USS-RMU-16", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-15", dest: "USS-RMU-16", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-15-52RB", dest: "USS-RMU-16-52RA", system: "MV", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-RMU 15-17 Jumpers" },
-    { source: "USS-RMU-16", dest: "USS-RMU-17", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-16", dest: "USS-RMU-17", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-16-52RB", dest: "USS-RMU-17-52RA", system: "MV", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-RMU 15-17 Jumpers" },
-    { source: "USS-RMU-18", dest: "USS-RMU-19", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-18", dest: "USS-RMU-19", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-18-52RB", dest: "USS-RMU-19-52RA", system: "MV", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-RMU 18-20 Jumpers" },
-    { source: "USS-RMU-19", dest: "USS-RMU-20", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-19", dest: "USS-RMU-20", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-19-52RB", dest: "USS-RMU-20-52RA", system: "MV", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-RMU 18-20 Jumpers" },
-    { source: "USS-RMU-21", dest: "USS-RMU-22", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-21", dest: "USS-RMU-22", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-21-52RB", dest: "USS-RMU-22-52RA", system: "MV", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-RMU 21-23 Jumpers" },
-    { source: "USS-RMU-22", dest: "USS-RMU-23", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-22", dest: "USS-RMU-23", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-22-52RB", dest: "USS-RMU-23-52RA", system: "MV", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-RMU 21-23 Jumpers" },
-    { source: "USS-RMU-24", dest: "USS-RMU-25", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-24", dest: "USS-RMU-25", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-24-52RB", dest: "USS-RMU-25-52RA", system: "MV", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-RMU 24-26 Jumpers" },
-    { source: "USS-RMU-25", dest: "USS-RMU-26", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-25", dest: "USS-RMU-26", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-Controls interconnects for USS" },
-    { source: "USS-RMU-25-52RB", dest: "USS-RMU-26-52RA", system: "MV", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-RMU 24-26 Jumpers" },
-    { source: "SSS-A-SWGR-52F02", dest: "USS-RMU-1-52RA", system: "MV", zone: "EYD Zone 2", drawer: 6, packet: "EY06-SSS-A-SWGR-52F02 to USS-RMU-1-52RA" },
-    { source: "SSS-A-SWGR-52F03", dest: "USS-RMU-3-52RA", system: "MV", zone: "EYD Zone 2", drawer: 6, packet: "EY06-SSS-A-SWGR-52F03 to USS-RMU-3-52RA" },
-    { source: "SSS-A-SWGR-52F04", dest: "USS-RMU-6-52RA", system: "MV", zone: "EYD Zone 2", drawer: 6, packet: "EY06-SSS-A-SWGR-52F04 to USS-RMU-6-52RA" },
-    { source: "SSS-A-SWGR-52F05", dest: "USS-RMU-9-52RA", system: "MV", zone: "EYD Zone 2", drawer: 6, packet: "EY06-SSS-A-SWGR-52F05 to USS-RMU-9-52RA" },
-    { source: "SSS-A-SWGR-52F06", dest: "USS-RMU-12-52RA", system: "MV", zone: "EYD Zone 2", drawer: 6, packet: "EY06-SSS-A-SWGR-52F06 to USS-RMU-12-52RA" },
-    { source: "SSS-A-SWGR-52F07", dest: "USS-RMU-15-52RA", system: "MV", zone: "EYD Zone 2", drawer: 6, packet: "EY06-SSS-A-SWGR-52F07 to USS-RMU-15-52RA" },
-    { source: "SSS-A-SWGR-52F08", dest: "USS-RMU-18-52RA", system: "MV", zone: "EYD Zone 2", drawer: 6, packet: "EY06-SSS-A-SWGR-52F08 to USS-RMU-18-52RA" },
-    { source: "SSS-A-SWGR-52F09", dest: "USS-RMU-21-52RA", system: "MV", zone: "EYD Zone 2", drawer: 6, packet: "EY06-SSS-A-SWGR-52F09 to USS-RMU-21-52RA" },
-    { source: "SSS-A-SWGR-52F10", dest: "USS-RMU-24-52RA", system: "MV", zone: "EYD Zone 2", drawer: 6, packet: "EY06-SSS-A-SWGR-52F10 to USS-RMU-24-52RA" },
-    { source: "SSS-AC-A", dest: "USS-RMU-1", system: "AC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-AC-A to USS-RMU 1-13" },
-    { source: "SSS-AC-A", dest: "USS-RMU-2", system: "AC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-AC-A to USS-RMU 1-13" },
-    { source: "SSS-AC-A", dest: "USS-RMU-3", system: "AC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-AC-A to USS-RMU 1-13" },
-    { source: "SSS-AC-A", dest: "USS-RMU-4", system: "AC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-AC-A to USS-RMU 1-13" },
-    { source: "SSS-AC-A", dest: "USS-RMU-5", system: "AC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-AC-A to USS-RMU 1-13" },
-    { source: "SSS-AC-A", dest: "USS-RMU-6", system: "AC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-AC-A to USS-RMU 1-13" },
-    { source: "SSS-AC-A", dest: "USS-RMU-7", system: "AC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-AC-A to USS-RMU 1-13" },
-    { source: "SSS-AC-A", dest: "USS-RMU-8", system: "AC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-AC-A to USS-RMU 1-13" },
-    { source: "SSS-AC-A", dest: "USS-RMU-9", system: "AC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-AC-A to USS-RMU 1-13" },
-    { source: "SSS-AC-A", dest: "USS-RMU-10", system: "AC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-AC-A to USS-RMU 1-13" },
-    { source: "SSS-AC-A", dest: "USS-RMU-11", system: "AC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-AC-A to USS-RMU 1-13" },
-    { source: "SSS-AC-A", dest: "USS-RMU-12", system: "AC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-AC-A to USS-RMU 1-13" },
-    { source: "SSS-AC-A", dest: "USS-RMU-13", system: "AC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-AC-A to USS-RMU 1-13" },
-    { source: "SSS-AC-B", dest: "USS-RMU-14", system: "AC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-AC-B to USS-RMU 14-26" },
-    { source: "SSS-AC-B", dest: "USS-RMU-15", system: "AC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-AC-B to USS-RMU 14-26" },
-    { source: "SSS-AC-B", dest: "USS-RMU-16", system: "AC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-AC-B to USS-RMU 14-26" },
-    { source: "SSS-AC-B", dest: "USS-RMU-17", system: "AC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-AC-B to USS-RMU 14-26" },
-    { source: "SSS-AC-B", dest: "USS-RMU-18", system: "AC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-AC-B to USS-RMU 14-26" },
-    { source: "SSS-AC-B", dest: "USS-RMU-19", system: "AC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-AC-B to USS-RMU 14-26" },
-    { source: "SSS-AC-B", dest: "USS-RMU-20", system: "AC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-AC-B to USS-RMU 14-26" },
-    { source: "SSS-AC-B", dest: "USS-RMU-21", system: "AC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-AC-B to USS-RMU 14-26" },
-    { source: "SSS-AC-B", dest: "USS-RMU-22", system: "AC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-AC-B to USS-RMU 14-26" },
-    { source: "SSS-AC-B", dest: "USS-RMU-23", system: "AC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-AC-B to USS-RMU 14-26" },
-    { source: "SSS-AC-B", dest: "USS-RMU-24", system: "AC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-AC-B to USS-RMU 14-26" },
-    { source: "SSS-AC-B", dest: "USS-RMU-25", system: "AC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-AC-B to USS-RMU 14-26" },
-    { source: "SSS-AC-B", dest: "USS-RMU-26", system: "AC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-AC-B to USS-RMU 14-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-1", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-2", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-3", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-4", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-5", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-6", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-7", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-8", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-9", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-10", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-11", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-12", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-13", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-14", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-15", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-16", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-17", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-18", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-19", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-20", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-21", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-22", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-23", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-24", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-25", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "USS-RMU-26", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-DCP-A to USS-RMU 1-26" },
-    { source: "SSS-A-DCP-A", dest: "SSS-B-DCP-B", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-DCP-A to SSS-B-DCP-B" },
-    { source: "SSS-A-MC", dest: "USS-RMU-1", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-MC to USS-RMU 1,3,6,9,12,15,18,21,24" },
-    { source: "SSS-A-MC", dest: "USS-RMU-3", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-MC to USS-RMU 1,3,6,9,12,15,18,21,24" },
-    { source: "SSS-A-MC", dest: "USS-RMU-6", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-MC to USS-RMU 1,3,6,9,12,15,18,21,24" },
-    { source: "SSS-A-MC", dest: "USS-RMU-9", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-MC to USS-RMU 1,3,6,9,12,15,18,21,24" },
-    { source: "SSS-A-MC", dest: "USS-RMU-12", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-MC to USS-RMU 1,3,6,9,12,15,18,21,24" },
-    { source: "SSS-A-MC", dest: "USS-RMU-15", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-MC to USS-RMU 1,3,6,9,12,15,18,21,24" },
-    { source: "SSS-A-MC", dest: "USS-RMU-18", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-MC to USS-RMU 1,3,6,9,12,15,18,21,24" },
-    { source: "SSS-A-MC", dest: "USS-RMU-21", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-MC to USS-RMU 1,3,6,9,12,15,18,21,24" },
-    { source: "SSS-A-MC", dest: "USS-RMU-24", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-MC to USS-RMU 1,3,6,9,12,15,18,21,24" },
-    { source: "SSS-B-SWGR-52F02", dest: "USS-RMU-2-52RB", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-SWGR-52F02 to USS-RMU-2-52RB" },
-    { source: "SSS-B-SWGR-52F03", dest: "USS-RMU-5-52RB", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-SWGR-52F03 to USS-RMU-5-52RB" },
-    { source: "SSS-B-SWGR-52F04", dest: "USS-RMU-8-52RB", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-SWGR-52F04 to USS-RMU-8-52RB" },
-    { source: "SSS-B-SWGR-52F05", dest: "USS-RMU-11-52RB", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-SWGR-52F05 to USS-RMU-11-52RB" },
-    { source: "SSS-B-SWGR-52F06", dest: "USS-RMU-14-52RB", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-SWGR-52F06 to USS-RMU-14-52RB" },
-    { source: "SSS-B-SWGR-52F07", dest: "USS-RMU-17-52RB", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-SWGR-52F07 to USS-RMU-17-52RB" },
-    { source: "SSS-B-SWGR-52F08", dest: "USS-RMU-20-52RB", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-SWGR-52F08 to USS-RMU-20-52RB" },
-    { source: "SSS-B-SWGR-52F09", dest: "USS-RMU-23-52RB", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-SWGR-52F09 to USS-RMU-23-52RB" },
-    { source: "SSS-B-SWGR-52F10", dest: "USS-RMU-26-52RB", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-SWGR-52F10 to USS-RMU-26-52RB" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-1", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-2", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-3", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-4", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-5", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-6", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-7", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-8", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-9", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-10", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-11", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-12", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-13", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-14", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-15", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-16", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-17", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-18", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-19", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-20", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-21", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-22", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-23", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-24", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-25", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "USS-RMU-26", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-DCP-B to USS-RMU 1-26" },
-    { source: "SSS-B-DCP-B", dest: "SSS-A-DCP-A", system: "DC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-DCP-B to SSS-A-DCP-A" },
-    { source: "SSS-B-MC", dest: "USS-RMU-2", system: "Control", zone: "EYD Zone 2", drawer: 6, packet: "EY06-SSS-B-MC to USS-RMU 2,5,8,11,14,17,20,23,26" },
-    { source: "SSS-B-MC", dest: "USS-RMU-5", system: "Control", zone: "EYD Zone 2", drawer: 6, packet: "EY06-SSS-B-MC to USS-RMU 2,5,8,11,14,17,20,23,26" },
-    { source: "SSS-B-MC", dest: "USS-RMU-8", system: "Control", zone: "EYD Zone 2", drawer: 6, packet: "EY06-SSS-B-MC to USS-RMU 2,5,8,11,14,17,20,23,26" },
-    { source: "SSS-B-MC", dest: "USS-RMU-11", system: "Control", zone: "EYD Zone 2", drawer: 6, packet: "EY06-SSS-B-MC to USS-RMU 2,5,8,11,14,17,20,23,26" },
-    { source: "SSS-B-MC", dest: "USS-RMU-14", system: "Control", zone: "EYD Zone 2", drawer: 6, packet: "EY06-SSS-B-MC to USS-RMU 2,5,8,11,14,17,20,23,26" },
-    { source: "SSS-B-MC", dest: "USS-RMU-17", system: "Control", zone: "EYD Zone 2", drawer: 6, packet: "EY06-SSS-B-MC to USS-RMU 2,5,8,11,14,17,20,23,26" },
-    { source: "SSS-B-MC", dest: "USS-RMU-20", system: "Control", zone: "EYD Zone 2", drawer: 6, packet: "EY06-SSS-B-MC to USS-RMU 2,5,8,11,14,17,20,23,26" },
-    { source: "SSS-B-MC", dest: "USS-RMU-23", system: "Control", zone: "EYD Zone 2", drawer: 6, packet: "EY06-SSS-B-MC to USS-RMU 2,5,8,11,14,17,20,23,26" },
-    { source: "SSS-B-MC", dest: "USS-RMU-26", system: "Control", zone: "EYD Zone 2", drawer: 6, packet: "EY06-SSS-B-MC to USS-RMU 2,5,8,11,14,17,20,23,26" },
-    { source: "SSS-A-BDC", dest: "SSS-B-HVAC", system: "AC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-BDC to SSS-B-HVAC/MTS" },
-    { source: "SSS-B-BDC", dest: "SSS-A-HVAC", system: "AC", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-BDC to SSS-A-HVAC/MTS" },
-    { source: "USS-RMU-26", dest: "USS-XFMR-26", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-26", dest: "USS-XFMR-26", system: "CT", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-25", dest: "USS-XFMR-25", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-25", dest: "USS-XFMR-25", system: "CT", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-24", dest: "USS-XFMR-24", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-24", dest: "USS-XFMR-24", system: "CT", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-23", dest: "USS-XFMR-23", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-23", dest: "USS-XFMR-23", system: "CT", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-22", dest: "USS-XFMR-22", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-22", dest: "USS-XFMR-22", system: "CT", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-21", dest: "USS-XFMR-21", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-21", dest: "USS-XFMR-21", system: "CT", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-20", dest: "USS-XFMR-20", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-20", dest: "USS-XFMR-20", system: "CT", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-19", dest: "USS-XFMR-19", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-19", dest: "USS-XFMR-19", system: "CT", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-18", dest: "USS-XFMR-18", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-18", dest: "USS-XFMR-18", system: "CT", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-17", dest: "USS-XFMR-17", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-17", dest: "USS-XFMR-17", system: "CT", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-16", dest: "USS-XFMR-16", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-16", dest: "USS-XFMR-16", system: "CT", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-15", dest: "USS-XFMR-15", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-15", dest: "USS-XFMR-15", system: "CT", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-14", dest: "USS-XFMR-14", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-14", dest: "USS-XFMR-14", system: "CT", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-13", dest: "USS-XFMR-13", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-13", dest: "USS-XFMR-13", system: "CT", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-12", dest: "USS-XFMR-12", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-12", dest: "USS-XFMR-12", system: "CT", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-11", dest: "USS-XFMR-11", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-11", dest: "USS-XFMR-11", system: "CT", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-10", dest: "USS-XFMR-10", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-10", dest: "USS-XFMR-10", system: "CT", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-9", dest: "USS-XFMR-9", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-9", dest: "USS-XFMR-9", system: "CT", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-8", dest: "USS-XFMR-8", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-8", dest: "USS-XFMR-8", system: "CT", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-7", dest: "USS-XFMR-7", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-7", dest: "USS-XFMR-7", system: "CT", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-6", dest: "USS-XFMR-6", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-6", dest: "USS-XFMR-6", system: "CT", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-5", dest: "USS-XFMR-5", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-5", dest: "USS-XFMR-5", system: "CT", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-4", dest: "USS-XFMR-4", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-4", dest: "USS-XFMR-4", system: "CT", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-3", dest: "USS-XFMR-3", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-3", dest: "USS-XFMR-3", system: "CT", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-2", dest: "USS-XFMR-2", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-2", dest: "USS-XFMR-2", system: "CT", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-1", dest: "USS-XFMR-1", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "USS-RMU-1", dest: "USS-XFMR-1", system: "CT", zone: "EYD Zone 2", drawer: "", packet: "" },
-    { source: "PERUN-A5", dest: "SSS-B-52UA", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "EY06-Perun to SDC Controls" },
-    { source: "PERUN-B3", dest: "SSS-A-52UB", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "EY06-Perun to SDC Controls" },
-    { source: "PERUN-B5", dest: "SSS-B-52UB", system: "Control", zone: "EYD Zone 2", drawer: "", packet: "EY06-Perun to SDC Controls" },
-    { source: "USS-XFMR-1", dest: "USS-SWGR-1", system: "Modbus", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-2", dest: "USS-SWGR-2", system: "Modbus", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-3", dest: "USS-SWGR-3", system: "Modbus", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-4", dest: "USS-SWGR-4", system: "Modbus", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-5", dest: "USS-SWGR-5", system: "Modbus", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-6", dest: "USS-SWGR-6", system: "Modbus", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-7", dest: "USS-SWGR-7", system: "Modbus", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-8", dest: "USS-SWGR-8", system: "Modbus", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-9", dest: "USS-SWGR-9", system: "Modbus", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-10", dest: "USS-SWGR-10", system: "Modbus", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-11", dest: "USS-SWGR-11", system: "Modbus", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-12", dest: "USS-SWGR-12", system: "Modbus", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-13", dest: "USS-SWGR-13", system: "Modbus", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-14", dest: "USS-SWGR-14", system: "Modbus", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-15", dest: "USS-SWGR-15", system: "Modbus", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-16", dest: "USS-SWGR-16", system: "Modbus", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-17", dest: "USS-SWGR-17", system: "Modbus", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-18", dest: "USS-SWGR-18", system: "Modbus", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-19", dest: "USS-SWGR-19", system: "Modbus", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-20", dest: "USS-SWGR-20", system: "Modbus", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-21", dest: "USS-SWGR-21", system: "Modbus", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-22", dest: "USS-SWGR-22", system: "Modbus", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-23", dest: "USS-SWGR-23", system: "Modbus", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-24", dest: "USS-SWGR-24", system: "Modbus", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-25", dest: "USS-SWGR-25", system: "Modbus", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-26", dest: "USS-SWGR-26", system: "Modbus", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "SSS-A-SWGR-52F15", dest: "ELEC-XFMR-A", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-A-SWGR to ELEC-XFMR-A" },
-    { source: "SSS-B-SWGR-52F15", dest: "ELEC-XFMR-B", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-SSS-B-SWGR to ELEC-XFMR-B" },
-    { source: "USS-RMU-1", dest: "USS-XFMR-1", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-RMU to USS-XFMR 1-2" },
-    { source: "USS-RMU-2", dest: "USS-XFMR-2", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-RMU to USS-XFMR 1-2" },
-    { source: "USS-RMU-3", dest: "USS-XFMR-3", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-RMU to USS-XFMR 3-5" },
-    { source: "USS-RMU-4", dest: "USS-XFMR-4", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-RMU to USS-XFMR 3-5" },
-    { source: "USS-RMU-5", dest: "USS-XFMR-5", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-RMU to USS-XFMR 3-5" },
-    { source: "USS-RMU-6", dest: "USS-XFMR-6", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-RMU to USS-XFMR 6-8" },
-    { source: "USS-RMU-7", dest: "USS-XFMR-7", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-RMU to USS-XFMR 6-8" },
-    { source: "USS-RMU-8", dest: "USS-XFMR-8", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-RMU to USS-XFMR 6-8" },
-    { source: "USS-RMU-9", dest: "USS-XFMR-9", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-RMU to USS-XFMR 9-11" },
-    { source: "USS-RMU-10", dest: "USS-XFMR-10", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-RMU to USS-XFMR 9-11" },
-    { source: "USS-RMU-11", dest: "USS-XFMR-11", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-RMU to USS-XFMR 9-11" },
-    { source: "USS-RMU-12", dest: "USS-XFMR-12", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-RMU to USS-XFMR 12-14" },
-    { source: "USS-RMU-13", dest: "USS-XFMR-13", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-RMU to USS-XFMR 12-14" },
-    { source: "USS-RMU-14", dest: "USS-XFMR-14", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-RMU to USS-XFMR 12-14" },
-    { source: "USS-RMU-15", dest: "USS-XFMR-15", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-RMU to USS-XFMR 15-17" },
-    { source: "USS-RMU-16", dest: "USS-XFMR-16", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-RMU to USS-XFMR 15-17" },
-    { source: "USS-RMU-17", dest: "USS-XFMR-17", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-RMU to USS-XFMR 15-17" },
-    { source: "USS-RMU-18", dest: "USS-XFMR-18", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-RMU to USS-XFMR 18-20" },
-    { source: "USS-RMU-19", dest: "USS-XFMR-19", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-RMU to USS-XFMR 18-20" },
-    { source: "USS-RMU-20", dest: "USS-XFMR-20", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-RMU to USS-XFMR 18-20" },
-    { source: "USS-RMU-21", dest: "USS-XFMR-21", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-RMU to USS-XFMR 21-23" },
-    { source: "USS-RMU-22", dest: "USS-XFMR-22", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-RMU to USS-XFMR 21-23" },
-    { source: "USS-RMU-23", dest: "USS-XFMR-23", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-RMU to USS-XFMR 21-23" },
-    { source: "USS-RMU-24", dest: "USS-XFMR-24", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-RMU to USS-XFMR 24-26" },
-    { source: "USS-RMU-25", dest: "USS-XFMR-25", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-RMU to USS-XFMR 24-26" },
-    { source: "USS-RMU-26", dest: "USS-XFMR-26", system: "MV", zone: "EYD Zone 2", drawer: "", packet: "EY06-USS-RMU to USS-XFMR 24-26" },
-    { source: "USS-XFMR-1", dest: "USS-SWGR-1", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-2", dest: "USS-SWGR-2", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-3", dest: "USS-SWGR-3", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-4", dest: "USS-SWGR-4", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-5", dest: "USS-SWGR-5", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-6", dest: "USS-SWGR-6", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-7", dest: "USS-SWGR-7", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-8", dest: "USS-SWGR-8", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-9", dest: "USS-SWGR-9", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-10", dest: "USS-SWGR-10", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-11", dest: "USS-SWGR-11", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-12", dest: "USS-SWGR-12", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-13", dest: "USS-SWGR-13", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-14", dest: "USS-SWGR-14", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-15", dest: "USS-SWGR-15", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-16", dest: "USS-SWGR-16", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-17", dest: "USS-SWGR-17", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-18", dest: "USS-SWGR-18", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-19", dest: "USS-SWGR-19", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-20", dest: "USS-SWGR-20", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-21", dest: "USS-SWGR-21", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-22", dest: "USS-SWGR-22", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-23", dest: "USS-SWGR-23", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-24", dest: "USS-SWGR-24", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-25", dest: "USS-SWGR-25", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "USS-XFMR-26", dest: "USS-SWGR-26", system: "Control", zone: "EYD Zone 2", drawer: 5, packet: "EY06-USS-XFMR to USS-SWGR 1-26 Controls" },
-    { source: "PERUN-B1", dest: "MYD-SDC-B", system: "MV", zone: "MYD", drawer: "", packet: "EY05-PERUN-B6 to SDC-B" },
-    { source: "SDT SIS-A1", dest: "SDC-A-52U", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PERUN to SDC Protection" },
-    { source: "SDT SIS-B1", dest: "SDC-B-52U", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PERUN to SDC Protection" },
-    { source: "SDC-A-52F01", dest: "PDC-RMU-1-52RA", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-SDC-A to PDC-1" },
-    { source: "SDC-A-MC", dest: "PDC-RMU-1", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-SDC-A to PDC-RMU 1,4,7,10,13,16,19,22" },
-    { source: "SDC-A-52F02", dest: "PDC-RMU-4-52RA", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-SDC-A to PDC-4" },
-    { source: "SDC-A-MC", dest: "PDC-RMU-4", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-SDC-A to PDC-RMU 1,4,7,10,13,16,19,22" },
-    { source: "SDC-A-52F03", dest: "PDC-RMU-7-52RA", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-SDC-A to PDC-7" },
-    { source: "SDC-A-MC", dest: "PDC-RMU-7", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-SDC-A to PDC-RMU 1,4,7,10,13,16,19,22" },
-    { source: "SDC-A-52F04", dest: "PDC-RMU-10-52RA", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-SDC-A to PDC-10" },
-    { source: "SDC-A-MC", dest: "PDC-RMU-10", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-SDC-A to PDC-RMU 1,4,7,10,13,16,19,22" },
-    { source: "SDC-A-52F05", dest: "PDC-RMU-13-52RA", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-SDC-A to PDC-13" },
-    { source: "SDC-A-MC", dest: "PDC-RMU-13", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-SDC-A to PDC-RMU 1,4,7,10,13,16,19,22" },
-    { source: "SDC-A-52F06", dest: "PDC-RMU-16-52RA", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-SDC-A to PDC-16" },
-    { source: "SDC-A-MC", dest: "PDC-RMU-16", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-SDC-A to PDC-RMU 1,4,7,10,13,16,19,22" },
-    { source: "SDC-A-52F07", dest: "PDC-RMU-19-52RA", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-SDC-A to PDC-19" },
-    { source: "SDC-A-MC", dest: "PDC-RMU-19", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-SDC-A to PDC-RMU 1,4,7,10,13,16,19,22" },
-    { source: "SDC-A-52F08", dest: "PDC-RMU-22-52RA", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-SDC-A to PDC-22" },
-    { source: "SDC-A-MC", dest: "PDC-RMU-22", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-SDC-A to PDC-RMU 1,4,7,10,13,16,19,22" },
-    { source: "SDC-B-52F01", dest: "PDC-RMU-3-52RA", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-SDC-B to PDC-3" },
-    { source: "SDC-B-MC", dest: "PDC-RMU-3", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-SDC-B to PDC-RMU 3,6,9,12,15,18,21,24" },
-    { source: "SDC-B-52F02", dest: "PDC-RMU-6-52RA", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-SDC-B to PDC-6" },
-    { source: "SDC-B-MC", dest: "PDC-RMU-6", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-SDC-B to PDC-RMU 3,6,9,12,15,18,21,24" },
-    { source: "SDC-B-52F03", dest: "PDC-RMU-9-52RA", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-SDC-B to PDC-9" },
-    { source: "SDC-B-MC", dest: "PDC-RMU-9", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-SDC-B to PDC-RMU 3,6,9,12,15,18,21,24" },
-    { source: "SDC-B-52F04", dest: "PDC-RMU-12-52RA", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-SDC-B to PDC-12" },
-    { source: "SDC-B-MC", dest: "PDC-RMU-12", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-SDC-B to PDC-RMU 3,6,9,12,15,18,21,24" },
-    { source: "SDC-B-52F05", dest: "PDC-RMU-15-52RA", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-SDC-B to PDC-15" },
-    { source: "SDC-B-MC", dest: "PDC-RMU-15", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-SDC-B to PDC-RMU 3,6,9,12,15,18,21,24" },
-    { source: "SDC-B-52F06", dest: "PDC-RMU-18-52RA", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-SDC-B to PDC-18" },
-    { source: "SDC-B-MC", dest: "PDC-RMU-18", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-SDC-B to PDC-RMU 3,6,9,12,15,18,21,24" },
-    { source: "SDC-B-52F07", dest: "PDC-RMU-21-52RA", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-SDC-B to PDC-21" },
-    { source: "SDC-B-MC", dest: "PDC-RMU-21", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-SDC-B to PDC-RMU 3,6,9,12,15,18,21,24" },
-    { source: "SDC-B-52F08", dest: "PDC-RMU-24-52RA", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-SDC-B to PDC-24" },
-    { source: "SDC-B-MC", dest: "PDC-RMU-24", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-SDC-B to PDC-RMU 3,6,9,12,15,18,21,24" },
-    { source: "PDC-RMU-1-52RB", dest: "PDC-RMU-2-52RA", system: "MV", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU 1-2 Jumpers" },
-    { source: "PDC-RMU-2-52RB", dest: "PDC-RMU-3-52RA", system: "MV", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU 2-3 Jumpers" },
-    { source: "PDC-RMU-4-52RB", dest: "PDC-RMU-5-52RA", system: "MV", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU 4-5 Jumpers" },
-    { source: "PDC-RMU-5-52RB", dest: "PDC-RMU-6-52RA", system: "MV", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU 5-6 Jumpers" },
-    { source: "PDC-RMU-7-52RB", dest: "PDC-RMU-8-52RA", system: "MV", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU 7-8 Jumpers" },
-    { source: "PDC-RMU-8-52RB", dest: "PDC-RMU-9-52RA", system: "MV", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU 8-9 Jumpers" },
-    { source: "PDC-RMU-10-52RB", dest: "PDC-RMU-11-52RA", system: "MV", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU 10-11 Jumpers" },
-    { source: "PDC-RMU-11-52RB", dest: "PDC-RMU-12-52RA", system: "MV", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU 11-12 Jumpers" },
-    { source: "PDC-RMU-13-52RB", dest: "PDC-RMU-14-52RA", system: "MV", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU 13-14 Jumpers" },
-    { source: "PDC-RMU-14-52RB", dest: "PDC-RMU-15-52RA", system: "MV", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU 14-15 Jumpers" },
-    { source: "PDC-RMU-16-52RB", dest: "PDC-RMU-17-52RA", system: "MV", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU 16-17 Jumpers" },
-    { source: "PDC-XFMR-19", dest: "PDC-SWGR-19", system: "Modbus", zone: "MYD", drawer: "", packet: "" },
-    { source: "AC-RP3", dest: "SDC-A", system: "AC", zone: "MYD", drawer: "", packet: "MY03-PNL-RP3 to SDC" },
-    { source: "AC-RP3", dest: "SDC-B", system: "AC", zone: "MYD", drawer: "", packet: "MY03-PNL-RP3 to SDC" },
-    { source: "AC-RP4", dest: "SDC-A-NC", system: "AC", zone: "MYD", drawer: "", packet: "MY03-PNL-RP4 to SDC NETCAB" },
-    { source: "AC-RP4", dest: "SDC-B-NC", system: "AC", zone: "MYD", drawer: "", packet: "MY03-PNL-RP4 to SDC NETCAB" },
-    { source: "DCP-A-1", dest: "PDC-RMU-1", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-A-1 to PDC-RMU 1-6" },
-    { source: "DCP-A-1", dest: "PDC-RMU-2", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-A-1 to PDC-RMU 1-6" },
-    { source: "DCP-A-1", dest: "PDC-RMU-3", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-A-1 to PDC-RMU 1-6" },
-    { source: "DCP-A-1", dest: "PDC-RMU-4", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-A-1 to PDC-RMU 1-6" },
-    { source: "DCP-A-1", dest: "PDC-RMU-5", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-A-1 to PDC-RMU 1-6" },
-    { source: "DCP-A-1", dest: "PDC-RMU-6", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-A-1 to PDC-RMU 1-6" },
-    { source: "DCP-A-2", dest: "PDC-RMU-7", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-A-2 to PDC-RMU 7-12" },
-    { source: "DCP-A-2", dest: "PDC-RMU-8", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-A-2 to PDC-RMU 7-12" },
-    { source: "DCP-A-2", dest: "PDC-RMU-9", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-A-2 to PDC-RMU 7-12" },
-    { source: "DCP-A-2", dest: "PDC-RMU-10", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-A-2 to PDC-RMU 7-12" },
-    { source: "DCP-A-2", dest: "PDC-RMU-11", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-A-2 to PDC-RMU 7-12" },
-    { source: "DCP-A-2", dest: "PDC-RMU-12", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-A-2 to PDC-RMU 7-12" },
-    { source: "DCP-A-1", dest: "PDC-RMU-13", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-A-1 to PDC-RMU 13-18" },
-    { source: "DCP-A-1", dest: "PDC-RMU-14", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-A-1 to PDC-RMU 13-18" },
-    { source: "DCP-A-1", dest: "PDC-RMU-15", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-A-1 to PDC-RMU 13-18" },
-    { source: "DCP-A-1", dest: "PDC-RMU-16", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-A-1 to PDC-RMU 13-18" },
-    { source: "DCP-A-1", dest: "PDC-RMU-17", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-A-1 to PDC-RMU 13-18" },
-    { source: "DCP-A-1", dest: "PDC-RMU-18", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-A-1 to PDC-RMU 13-18" },
-    { source: "DCP-A-2", dest: "PDC-RMU-19", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-A-2 to PDC-RMU 19-24" },
-    { source: "DCP-A-2", dest: "PDC-RMU-20", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-A-2 to PDC-RMU 19-24" },
-    { source: "DCP-A-2", dest: "PDC-RMU-21", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-A-2 to PDC-RMU 19-24" },
-    { source: "DCP-A-2", dest: "PDC-RMU-22", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-A-2 to PDC-RMU 19-24" },
-    { source: "DCP-A-2", dest: "PDC-RMU-23", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-A-2 to PDC-RMU 19-24" },
-    { source: "DCP-A-2", dest: "PDC-RMU-24", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-A-2 to PDC-RMU 19-24" },
-    { source: "DCP-A-2", dest: "SDC-A", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-A-2 to SDC" },
-    { source: "DCP-A-2", dest: "SDC-B", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-A-2 to SDC" },
-    { source: "DCP-A-2", dest: "SDC-A-NC", system: "DC", zone: "MYD", drawer: "", packet: "MY03-PNL-DCP-A-2 to SDC NETCAB" },
-    { source: "DCP-A-2", dest: "SDC-B-NC", system: "DC", zone: "MYD", drawer: "", packet: "MY03-PNL-DCP-A-2 to SDC NETCAB" },
-    { source: "DCP-B-1", dest: "PDC-RMU-1", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-B-1 to PDC-RMU 1-6" },
-    { source: "DCP-B-1", dest: "PDC-RMU-2", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-B-1 to PDC-RMU 1-6" },
-    { source: "DCP-B-1", dest: "PDC-RMU-3", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-B-1 to PDC-RMU 1-6" },
-    { source: "DCP-B-1", dest: "PDC-RMU-4", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-B-1 to PDC-RMU 1-6" },
-    { source: "DCP-B-1", dest: "PDC-RMU-5", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-B-1 to PDC-RMU 1-6" },
-    { source: "DCP-B-1", dest: "PDC-RMU-6", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-B-1 to PDC-RMU 1-6" },
-    { source: "DCP-B-2", dest: "PDC-RMU-7", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-B-2 to PDC-RMU 7-12" },
-    { source: "DCP-B-2", dest: "PDC-RMU-8", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-B-2 to PDC-RMU 7-12" },
-    { source: "DCP-B-2", dest: "PDC-RMU-9", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-B-2 to PDC-RMU 7-12" },
-    { source: "DCP-B-2", dest: "PDC-RMU-10", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-B-2 to PDC-RMU 7-12" },
-    { source: "DCP-B-2", dest: "PDC-RMU-11", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-B-2 to PDC-RMU 7-12" },
-    { source: "DCP-B-2", dest: "PDC-RMU-12", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-B-2 to PDC-RMU 7-12" },
-    { source: "DCP-B-1", dest: "PDC-RMU-13", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-B-1 to PDC-RMU 13-18" },
-    { source: "DCP-B-1", dest: "PDC-RMU-14", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-B-1 to PDC-RMU 13-18" },
-    { source: "DCP-B-1", dest: "PDC-RMU-15", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-B-1 to PDC-RMU 13-18" },
-    { source: "DCP-B-1", dest: "PDC-RMU-16", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-B-1 to PDC-RMU 13-18" },
-    { source: "DCP-B-1", dest: "PDC-RMU-17", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-B-1 to PDC-RMU 13-18" },
-    { source: "DCP-B-1", dest: "PDC-RMU-18", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-B-1 to PDC-RMU 13-18" },
-    { source: "DCP-B-2", dest: "PDC-RMU-19", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-B-2 to PDC-RMU 19-24" },
-    { source: "DCP-B-2", dest: "PDC-RMU-20", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-B-2 to PDC-RMU 19-24" },
-    { source: "DCP-B-2", dest: "PDC-RMU-21", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-B-2 to PDC-RMU 19-24" },
-    { source: "DCP-B-2", dest: "PDC-RMU-22", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-B-2 to PDC-RMU 19-24" },
-    { source: "DCP-B-2", dest: "PDC-RMU-23", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-B-2 to PDC-RMU 19-24" },
-    { source: "DCP-B-2", dest: "PDC-RMU-24", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-B-2 to PDC-RMU 19-24" },
-    { source: "DCP-B-2", dest: "SDC-A", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-B-2 to SDC" },
-    { source: "DCP-B-2", dest: "SDC-B", system: "DC", zone: "MYD", drawer: "", packet: "MY03-DCP-B-2 to SDC" },
-    { source: "DCP-B-2", dest: "SDC-A-NC", system: "DC", zone: "MYD", drawer: "", packet: "MY03-PNL-DCP-B-2 to SDC NETCAB" },
-    { source: "DCP-B-2", dest: "SDC-B-NC", system: "DC", zone: "MYD", drawer: "", packet: "MY03-PNL-DCP-B-2 to SDC NETCAB" },
-    { source: "PDC-XFMR-24", dest: "PDC-SWGR-24", system: "Modbus", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-XFMR-23", dest: "PDC-SWGR-23", system: "Modbus", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-XFMR-22", dest: "PDC-SWGR-22", system: "Modbus", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-XFMR-21", dest: "PDC-SWGR-21", system: "Modbus", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-XFMR-20", dest: "PDC-SWGR-20", system: "Modbus", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-XFMR-19", dest: "PDC-SWGR-19", system: "Modbus", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-SWGR-18", dest: "PDC-GEN-18", system: "AC", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-XFMR-18", dest: "PDC-SWGR-18", system: "Modbus", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-SWGR-17", dest: "PDC-GEN-17", system: "AC", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-XFMR-17", dest: "PDC-SWGR-17", system: "Modbus", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-SWGR-16", dest: "PDC-GEN-16", system: "AC", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-XFMR-16", dest: "PDC-SWGR-16", system: "Modbus", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-SWGR-14", dest: "PDC-GEN-14", system: "AC", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-XFMR-14", dest: "PDC-SWGR-14", system: "Modbus", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-SWGR-13", dest: "PDC-GEN-13", system: "AC", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-XFMR-13", dest: "PDC-SWGR-13", system: "Modbus", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-XFMR-12", dest: "PDC-SWGR-12", system: "Modbus", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-XFMR-11", dest: "PDC-SWGR-11", system: "Modbus", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-XFMR-10", dest: "PDC-SWGR-10", system: "Modbus", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-XFMR-9", dest: "PDC-SWGR-9", system: "Modbus", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-XFMR-8", dest: "PDC-SWGR-8", system: "Modbus", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-XFMR-7", dest: "PDC-SWGR-7", system: "Modbus", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-SWGR-6", dest: "PDC-GEN-6", system: "AC", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-XFMR-6", dest: "PDC-SWGR-6", system: "Modbus", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-SWGR-5", dest: "PDC-GEN-5", system: "AC", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-XFMR-5", dest: "PDC-SWGR-5", system: "Modbus", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-SWGR-4", dest: "PDC-GEN-4", system: "AC", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-XFMR-4", dest: "PDC-SWGR-4", system: "Modbus", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-SWGR-3", dest: "PDC-GEN-3", system: "AC", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-XFMR-3", dest: "PDC-SWGR-3", system: "Modbus", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-SWGR-2", dest: "PDC-GEN-2", system: "AC", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-XFMR-2", dest: "PDC-SWGR-2", system: "Modbus", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-SWGR-1", dest: "PDC-GEN-1", system: "AC", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-XFMR-1", dest: "PDC-SWGR-1", system: "Modbus", zone: "MYD", drawer: "", packet: "" },
-    { source: "PDC-RMU-1", dest: "PDC-XFMR-1", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-RMU-PDC-1 to XFMR-PDC-1" },
-    { source: "PDC-RMU-2", dest: "PDC-XFMR-2", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-RMU-PDC-2 to XFMR-PDC-2" },
-    { source: "PDC-RMU-3", dest: "PDC-XFMR-3", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-RMU-PDC-3 to XFMR-PDC-3" },
-    { source: "PDC-RMU-4", dest: "PDC-XFMR-4", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-RMU-PDC-4 to XFMR-PDC-4" },
-    { source: "PDC-RMU-5", dest: "PDC-XFMR-5", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-RMU-PDC-5 to XFMR-PDC-5" },
-    { source: "PDC-RMU-6", dest: "PDC-XFMR-6", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-RMU-PDC-6 to XFMR-PDC-6" },
-    { source: "PDC-RMU-7", dest: "PDC-XFMR-7", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-RMU-PDC-7 to XFMR-PDC-7" },
-    { source: "PDC-RMU-8", dest: "PDC-XFMR-8", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-RMU-PDC-8 to XFMR-PDC-8" },
-    { source: "PDC-RMU-9", dest: "PDC-XFMR-9", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-RMU-PDC-9 to XFMR-PDC-9" },
-    { source: "PDC-RMU-10", dest: "PDC-XFMR-10", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-RMU-PDC-10 to XFMR-PDC-10" },
-    { source: "PDC-RMU-11", dest: "PDC-XFMR-11", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-RMU-PDC-11 to XFMR-PDC-11" },
-    { source: "PDC-RMU-12", dest: "PDC-XFMR-12", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-RMU-PDC-12 to XFMR-PDC-12" },
-    { source: "PDC-RMU-13", dest: "PDC-XFMR-13", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-RMU-PDC-13 to XFMR-PDC-13" },
-    { source: "PDC-RMU-14", dest: "PDC-XFMR-14", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-RMU-PDC-14 to XFMR-PDC-14" },
-    { source: "PDC-RMU-15", dest: "PDC-XFMR-15", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-RMU-PDC-15 to XFMR-PDC-15" },
-    { source: "PDC-RMU-16", dest: "PDC-XFMR-16", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-RMU-PDC-16 to XFMR-PDC-16" },
-    { source: "PDC-RMU-17", dest: "PDC-XFMR-17", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-RMU-PDC-17 to XFMR-PDC-17" },
-    { source: "PDC-RMU-18", dest: "PDC-XFMR-18", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-RMU-PDC-18 to XFMR-PDC-18" },
-    { source: "PDC-RMU-19", dest: "PDC-XFMR-19", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-RMU-PDC-19 to XFMR-PDC-19" },
-    { source: "PDC-RMU-20", dest: "PDC-XFMR-20", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-RMU-PDC-20 to XFMR-PDC-20" },
-    { source: "PDC-RMU-21", dest: "PDC-XFMR-21", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-RMU-PDC-21 to XFMR-PDC-21" },
-    { source: "PDC-RMU-22", dest: "PDC-XFMR-22", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-RMU-PDC-22 to XFMR-PDC-22" },
-    { source: "PDC-RMU-23", dest: "PDC-XFMR-23", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-RMU-PDC-23 to XFMR-PDC-23" },
-    { source: "PDC-RMU-24", dest: "PDC-XFMR-24", system: "MV", zone: "MYD", drawer: "", packet: "MY03-SWGR-RMU-PDC-24 to XFMR-PDC-24" },
-    { source: "PDC-RMU-1", dest: "PDC-RMU-2", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-1 to PDC Control & Protection" },
-    { source: "PDC-RMU-1", dest: "PDC-RMU-2", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-1 to PDC Control & Protection" },
-    { source: "PDC-RMU-1", dest: "PDC-XFMR-1", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-1 to PDC Control & Protection" },
-    { source: "PDC-RMU-1", dest: "PDC-XFMR-1", system: "CT", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-1 to PDC Control & Protection" },
-    { source: "PDC-RMU-1", dest: "PDC-XFMR-1", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-1 to PDC Control & Protection" },
-    { source: "PDC-XFMR-1", dest: "PDC-SWGR-1", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-1 to PDC Control & Protection" },
-    { source: "PDC-SWGR-1", dest: "PDC-GEN-1", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-1 to PDC Control & Protection" },
-    { source: "PDC-RMU-2", dest: "PDC-RMU-3", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-2 to PDC Control & Protection" },
-    { source: "PDC-RMU-2", dest: "PDC-RMU-3", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-2 to PDC Control & Protection" },
-    { source: "PDC-RMU-2", dest: "PDC-XFMR-2", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-2 to PDC Control & Protection" },
-    { source: "PDC-RMU-2", dest: "PDC-XFMR-2", system: "CT", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-2 to PDC Control & Protection" },
-    { source: "PDC-RMU-2", dest: "PDC-XFMR-2", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-2 to PDC Control & Protection" },
-    { source: "PDC-XFMR-2", dest: "PDC-SWGR-2", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-2 to PDC Control & Protection" },
-    { source: "PDC-SWGR-2", dest: "PDC-GEN-2", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-2 to PDC Control & Protection" },
-    { source: "PDC-RMU-3", dest: "PDC-XFMR-3", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-3 to PDC Control & Protection" },
-    { source: "PDC-RMU-3", dest: "PDC-XFMR-3", system: "CT", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-3 to PDC Control & Protection" },
-    { source: "PDC-RMU-3", dest: "PDC-XFMR-3", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-3 to PDC Control & Protection" },
-    { source: "PDC-XFMR-3", dest: "PDC-SWGR-3", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-3 to PDC Control & Protection" },
-    { source: "PDC-SWGR-3", dest: "PDC-GEN-3", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-3 to PDC Control & Protection" },
-    { source: "PDC-RMU-4", dest: "PDC-RMU-5", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-4 to PDC Control & Protection" },
-    { source: "PDC-RMU-4", dest: "PDC-RMU-5", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-4 to PDC Control & Protection" },
-    { source: "PDC-RMU-4", dest: "PDC-XFMR-4", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-4 to PDC Control & Protection" },
-    { source: "PDC-RMU-4", dest: "PDC-XFMR-4", system: "CT", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-4 to PDC Control & Protection" },
-    { source: "PDC-RMU-4", dest: "PDC-XFMR-4", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-4 to PDC Control & Protection" },
-    { source: "PDC-XFMR-4", dest: "PDC-SWGR-4", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-4 to PDC Control & Protection" },
-    { source: "PDC-SWGR-4", dest: "PDC-GEN-4", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-4 to PDC Control & Protection" },
-    { source: "PDC-RMU-5", dest: "PDC-RMU-6", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-5 to PDC Control & Protection" },
-    { source: "PDC-RMU-5", dest: "PDC-RMU-6", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-5 to PDC Control & Protection" },
-    { source: "PDC-RMU-5", dest: "PDC-XFMR-5", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-5 to PDC Control & Protection" },
-    { source: "PDC-RMU-5", dest: "PDC-XFMR-5", system: "CT", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-5 to PDC Control & Protection" },
-    { source: "PDC-RMU-5", dest: "PDC-XFMR-5", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-5 to PDC Control & Protection" },
-    { source: "PDC-XFMR-5", dest: "PDC-SWGR-5", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-5 to PDC Control & Protection" },
-    { source: "PDC-SWGR-5", dest: "PDC-GEN-5", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-5 to PDC Control & Protection" },
-    { source: "PDC-RMU-6", dest: "PDC-XFMR-6", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-6 to PDC Control & Protection" },
-    { source: "PDC-RMU-6", dest: "PDC-XFMR-6", system: "CT", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-6 to PDC Control & Protection" },
-    { source: "PDC-RMU-6", dest: "PDC-XFMR-6", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-6 to PDC Control & Protection" },
-    { source: "PDC-XFMR-6", dest: "PDC-SWGR-6", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-6 to PDC Control & Protection" },
-    { source: "PDC-SWGR-6", dest: "PDC-GEN-6", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-6 to PDC Control & Protection" },
-    { source: "PDC-RMU-7", dest: "PDC-RMU-8", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-7 to PDC Control & Protection" },
-    { source: "PDC-RMU-7", dest: "PDC-RMU-8", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-7 to PDC Control & Protection" },
-    { source: "PDC-RMU-7", dest: "PDC-XFMR-7", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-7 to PDC Control & Protection" },
-    { source: "PDC-RMU-7", dest: "PDC-XFMR-7", system: "CT", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-7 to PDC Control & Protection" },
-    { source: "PDC-RMU-7", dest: "PDC-XFMR-7", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-7 to PDC Control & Protection" },
-    { source: "PDC-XFMR-7", dest: "PDC-SWGR-7", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-7 to PDC Control & Protection" },
-    { source: "PDC-SWGR-7", dest: "PDC-GEN-7", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-7 to PDC Control & Protection" },
-    { source: "PDC-RMU-8", dest: "PDC-RMU-9", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-8 to PDC Control & Protection" },
-    { source: "PDC-RMU-8", dest: "PDC-RMU-9", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-8 to PDC Control & Protection" },
-    { source: "PDC-RMU-8", dest: "PDC-XFMR-8", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-8 to PDC Control & Protection" },
-    { source: "PDC-RMU-8", dest: "PDC-XFMR-8", system: "CT", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-8 to PDC Control & Protection" },
-    { source: "PDC-RMU-8", dest: "PDC-XFMR-8", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-8 to PDC Control & Protection" },
-    { source: "PDC-XFMR-8", dest: "PDC-SWGR-8", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-8 to PDC Control & Protection" },
-    { source: "PDC-SWGR-8", dest: "PDC-GEN-8", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-8 to PDC Control & Protection" },
-    { source: "PDC-RMU-9", dest: "PDC-XFMR-9", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-9 to PDC Control & Protection" },
-    { source: "PDC-RMU-9", dest: "PDC-XFMR-9", system: "CT", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-9 to PDC Control & Protection" },
-    { source: "PDC-RMU-9", dest: "PDC-XFMR-9", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-9 to PDC Control & Protection" },
-    { source: "PDC-XFMR-9", dest: "PDC-SWGR-9", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-9 to PDC Control & Protection" },
-    { source: "PDC-SWGR-9", dest: "PDC-GEN-9", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-9 to PDC Control & Protection" },
-    { source: "PDC-RMU-10", dest: "PDC-RMU-11", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-10 to PDC Control & Protection" },
-    { source: "PDC-RMU-10", dest: "PDC-RMU-11", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-10 to PDC Control & Protection" },
-    { source: "PDC-RMU-10", dest: "PDC-XFMR-10", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-10 to PDC Control & Protection" },
-    { source: "PDC-RMU-10", dest: "PDC-XFMR-10", system: "CT", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-10 to PDC Control & Protection" },
-    { source: "PDC-RMU-10", dest: "PDC-XFMR-10", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-10 to PDC Control & Protection" },
-    { source: "PDC-XFMR-10", dest: "PDC-SWGR-10", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-10 to PDC Control & Protection" },
-    { source: "PDC-SWGR-10", dest: "PDC-GEN-10", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-10 to PDC Control & Protection" },
-    { source: "PDC-RMU-11", dest: "PDC-RMU-12", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-11 to PDC Control & Protection" },
-    { source: "PDC-RMU-11", dest: "PDC-RMU-12", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-11 to PDC Control & Protection" },
-    { source: "PDC-RMU-11", dest: "PDC-XFMR-11", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-11 to PDC Control & Protection" },
-    { source: "PDC-RMU-11", dest: "PDC-XFMR-11", system: "CT", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-11 to PDC Control & Protection" },
-    { source: "PDC-RMU-11", dest: "PDC-XFMR-11", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-11 to PDC Control & Protection" },
-    { source: "PDC-XFMR-11", dest: "PDC-SWGR-11", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-11 to PDC Control & Protection" },
-    { source: "PDC-SWGR-11", dest: "PDC-GEN-11", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-11 to PDC Control & Protection" },
-    { source: "PDC-RMU-12", dest: "PDC-XFMR-12", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-12 to PDC Control & Protection" },
-    { source: "PDC-RMU-12", dest: "PDC-XFMR-12", system: "CT", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-12 to PDC Control & Protection" },
-    { source: "PDC-RMU-12", dest: "PDC-XFMR-12", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-12 to PDC Control & Protection" },
-    { source: "PDC-XFMR-12", dest: "PDC-SWGR-12", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-12 to PDC Control & Protection" },
-    { source: "PDC-SWGR-12", dest: "PDC-GEN-12", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-12 to PDC Control & Protection" },
-    { source: "PDC-RMU-13", dest: "PDC-RMU-14", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-13 to PDC Control & Protection" },
-    { source: "PDC-RMU-13", dest: "PDC-RMU-14", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-13 to PDC Control & Protection" },
-    { source: "PDC-RMU-13", dest: "PDC-XFMR-13", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-13 to PDC Control & Protection" },
-    { source: "PDC-RMU-13", dest: "PDC-XFMR-13", system: "CT", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-13 to PDC Control & Protection" },
-    { source: "PDC-RMU-13", dest: "PDC-XFMR-13", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-13 to PDC Control & Protection" },
-    { source: "PDC-XFMR-13", dest: "PDC-SWGR-13", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-13 to PDC Control & Protection" },
-    { source: "PDC-SWGR-13", dest: "PDC-GEN-13", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-13 to PDC Control & Protection" },
-    { source: "PDC-RMU-14", dest: "PDC-RMU-15", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-14 to PDC Control & Protection" },
-    { source: "PDC-RMU-14", dest: "PDC-RMU-15", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-14 to PDC Control & Protection" },
-    { source: "PDC-RMU-14", dest: "PDC-XFMR-14", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-14 to PDC Control & Protection" },
-    { source: "PDC-RMU-14", dest: "PDC-XFMR-14", system: "CT", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-14 to PDC Control & Protection" },
-    { source: "PDC-RMU-14", dest: "PDC-XFMR-14", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-14 to PDC Control & Protection" },
-    { source: "PDC-XFMR-14", dest: "PDC-SWGR-14", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-14 to PDC Control & Protection" },
-    { source: "PDC-SWGR-14", dest: "PDC-GEN-14", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-14 to PDC Control & Protection" },
-    { source: "PDC-RMU-16", dest: "PDC-RMU-17", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-16 to PDC Control & Protection" },
-    { source: "PDC-RMU-16", dest: "PDC-RMU-17", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-16 to PDC Control & Protection" },
-    { source: "PDC-RMU-16", dest: "PDC-XFMR-16", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-16 to PDC Control & Protection" },
-    { source: "PDC-RMU-16", dest: "PDC-XFMR-16", system: "CT", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-16 to PDC Control & Protection" },
-    { source: "PDC-RMU-16", dest: "PDC-XFMR-16", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-16 to PDC Control & Protection" },
-    { source: "PDC-XFMR-16", dest: "PDC-SWGR-16", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-16 to PDC Control & Protection" },
-    { source: "PDC-SWGR-16", dest: "PDC-GEN-16", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-16 to PDC Control & Protection" },
-    { source: "PDC-RMU-17", dest: "PDC-RMU-18", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-17 to PDC Control & Protection" },
-    { source: "PDC-RMU-17", dest: "PDC-RMU-18", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-17 to PDC Control & Protection" },
-    { source: "PDC-RMU-17", dest: "PDC-XFMR-17", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-17 to PDC Control & Protection" },
-    { source: "PDC-RMU-17", dest: "PDC-XFMR-17", system: "CT", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-17 to PDC Control & Protection" },
-    { source: "PDC-RMU-17", dest: "PDC-XFMR-17", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-17 to PDC Control & Protection" },
-    { source: "PDC-XFMR-17", dest: "PDC-SWGR-17", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-17 to PDC Control & Protection" },
-    { source: "PDC-SWGR-17", dest: "PDC-GEN-17", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-17 to PDC Control & Protection" },
-    { source: "PDC-RMU-18", dest: "PDC-XFMR-18", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-18 to PDC Control & Protection" },
-    { source: "PDC-RMU-18", dest: "PDC-XFMR-18", system: "CT", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-18 to PDC Control & Protection" },
-    { source: "PDC-RMU-18", dest: "PDC-XFMR-18", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-18 to PDC Control & Protection" },
-    { source: "PDC-XFMR-18", dest: "PDC-SWGR-18", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-18 to PDC Control & Protection" },
-    { source: "PDC-SWGR-18", dest: "PDC-GEN-18", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-18 to PDC Control & Protection" },
-    { source: "PDC-RMU-19", dest: "PDC-RMU-20", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-19 to PDC Control & Protection" },
-    { source: "PDC-RMU-19", dest: "PDC-RMU-20", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-19 to PDC Control & Protection" },
-    { source: "PDC-RMU-19", dest: "PDC-XFMR-19", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-19 to PDC Control & Protection" },
-    { source: "PDC-RMU-19", dest: "PDC-XFMR-19", system: "CT", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-19 to PDC Control & Protection" },
-    { source: "PDC-RMU-19", dest: "PDC-XFMR-19", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-19 to PDC Control & Protection" },
-    { source: "PDC-XFMR-19", dest: "PDC-SWGR-19", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-19 to PDC Control & Protection" },
-    { source: "PDC-SWGR-19", dest: "PDC-GEN-19", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-19 to PDC Control & Protection" },
-    { source: "PDC-RMU-20", dest: "PDC-XFMR-20", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-20 to PDC Control & Protection" },
-    { source: "PDC-RMU-20", dest: "PDC-XFMR-20", system: "CT", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-20 to PDC Control & Protection" },
-    { source: "PDC-RMU-20", dest: "PDC-XFMR-20", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-20 to PDC Control & Protection" },
-    { source: "PDC-XFMR-20", dest: "PDC-SWGR-20", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-20 to PDC Control & Protection" },
-    { source: "PDC-SWGR-20", dest: "PDC-GEN-20", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-20 to PDC Control & Protection" },
-    { source: "PDC-RMU-21", dest: "PDC-RMU-21", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-21 to PDC Control & Protection" },
-    { source: "PDC-RMU-21", dest: "PDC-RMU-21", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-21 to PDC Control & Protection" },
-    { source: "PDC-RMU-21", dest: "PDC-XFMR-21", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-21 to PDC Control & Protection" },
-    { source: "PDC-RMU-21", dest: "PDC-XFMR-21", system: "CT", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-21 to PDC Control & Protection" },
-    { source: "PDC-RMU-21", dest: "PDC-XFMR-21", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-21 to PDC Control & Protection" },
-    { source: "PDC-XFMR-21", dest: "PDC-SWGR-21", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-21 to PDC Control & Protection" },
-    { source: "PDC-SWGR-21", dest: "PDC-GEN-21", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-21 to PDC Control & Protection" },
-    { source: "PDC-RMU-22", dest: "PDC-RMU-23", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-22 to PDC Control & Protection" },
-    { source: "PDC-RMU-22", dest: "PDC-RMU-23", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-22 to PDC Control & Protection" },
-    { source: "PDC-RMU-22", dest: "PDC-XFMR-22", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-22 to PDC Control & Protection" },
-    { source: "PDC-RMU-22", dest: "PDC-XFMR-22", system: "CT", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-22 to PDC Control & Protection" },
-    { source: "PDC-RMU-22", dest: "PDC-XFMR-22", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-22 to PDC Control & Protection" },
-    { source: "PDC-XFMR-22", dest: "PDC-SWGR-22", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-22 to PDC Control & Protection" },
-    { source: "PDC-SWGR-22", dest: "PDC-GEN-22", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-22 to PDC Control & Protection" },
-    { source: "PDC-RMU-23", dest: "PDC-RMU-24", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-23 to PDC Control & Protection" },
-    { source: "PDC-RMU-23", dest: "PDC-RMU-24", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-23 to PDC Control & Protection" },
-    { source: "PDC-RMU-23", dest: "PDC-XFMR-23", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-23 to PDC Control & Protection" },
-    { source: "PDC-RMU-23", dest: "PDC-XFMR-23", system: "CT", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-23 to PDC Control & Protection" },
-    { source: "PDC-RMU-23", dest: "PDC-XFMR-23", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-23 to PDC Control & Protection" },
-    { source: "PDC-XFMR-23", dest: "PDC-SWGR-23", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-23 to PDC Control & Protection" },
-    { source: "PDC-SWGR-23", dest: "PDC-GEN-23", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-23 to PDC Control & Protection" },
-    { source: "PDC-RMU-24", dest: "PDC-XFMR-24", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-24 to PDC Control & Protection" },
-    { source: "PDC-RMU-24", dest: "PDC-XFMR-24", system: "CT", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-24 to PDC Control & Protection" },
-    { source: "PDC-RMU-24", dest: "PDC-XFMR-24", system: "PROTECTION", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-24 to PDC Control & Protection" },
-    { source: "PDC-XFMR-24", dest: "PDC-SWGR-24", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-24 to PDC Control & Protection" },
-    { source: "PDC-SWGR-24", dest: "PDC-GEN-24", system: "Control", zone: "MYD", drawer: "", packet: "MY03-PDC-RMU-24 to PDC Control & Protection" },
-  ];
-  // ──────────────────────────────────────────────────────────────────────────
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxSdRBg6E3mC-a_vILw_loWO_5kia-xKP-5TGoz9xlmAi9z1EZSFNzJASzUzFyj-S0u/exec";
 
-  const badgeClass = {
-    AC: "badge-AC", Control: "badge-Control", DC: "badge-DC",
-    Modbus: "badge-Modbus", MV: "badge-MV",
-  };
+  let activeZone    = "EYD Zone 1";
+  let equipmentData = [];
+  let checkoutsData = [];
+  let currentModal  = null;
 
-  const listEl      = document.getElementById("list");
-  const searchEl    = document.getElementById("search");
-  const filterEl    = document.getElementById("filter");
-  const countEl     = document.getElementById("results-count");
-  const zoneButtons = document.querySelectorAll(".zone-toggle button");
-
-  let activeZone = "EYD Zone 1";
-
-  zoneButtons.forEach(btn => {
+  // ── Zone toggle ──────────────────────────────────────────────────────────
+  document.querySelectorAll(".zone-toggle button").forEach(btn => {
     btn.addEventListener("click", () => {
       activeZone = btn.dataset.zone;
-      zoneButtons.forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".zone-toggle button").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
-      render();
+      loadEquipment();
     });
   });
 
-  function esc(s) {
-    return String(s).replace(/[&<>"']/g, c =>
-      ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+  document.getElementById("search").addEventListener("input", render);
+  document.getElementById("filter").addEventListener("change", render);
+
+  // ── API ──────────────────────────────────────────────────────────────────
+  async function apiFetch(params) {
+    const processed = {};
+    for (const [k, v] of Object.entries(params)) {
+      processed[k] = Array.isArray(v) ? JSON.stringify(v) : v;
+    }
+    const url = SCRIPT_URL + "?" + new URLSearchParams(processed).toString();
+    const res = await fetch(url);
+    return res.json();
+  }
+
+  // ── Load data ────────────────────────────────────────────────────────────
+  async function loadEquipment() {
+    document.getElementById("list").innerHTML = `<div class="loading">Loading...</div>`;
+    try {
+      const [equipRes, checkoutRes] = await Promise.all([
+        apiFetch({ action: "getEquipment", zone: activeZone }),
+        apiFetch({ action: "getCheckouts" })
+      ]);
+      equipmentData = equipRes.data  || [];
+      checkoutsData = checkoutRes.data || [];
+      render();
+    } catch (e) {
+      document.getElementById("list").innerHTML =
+        `<div class="empty">Failed to load. Check your connection and try again.</div>`;
+    }
+  }
+
+  async function loadHistory() {
+    document.getElementById("history-list").innerHTML = `<div class="loading">Loading...</div>`;
+    try {
+      const res     = await apiFetch({ action: "getHistory" });
+      const history = (res.data || []).slice().reverse();
+      if (!history.length) {
+        document.getElementById("history-list").innerHTML = `<div class="empty">No history yet.</div>`;
+        return;
+      }
+      document.getElementById("history-list").innerHTML = history.map(h => {
+        const isOut = h.action === "CHECKOUT";
+        const date  = h.timestamp ? new Date(h.timestamp).toLocaleString() : "";
+        return `
+          <div class="history-card">
+            <span class="history-action ${isOut ? "action-checkout" : "action-checkin"}">${h.action}</span>
+            <div class="history-packet">${h.packet || ""}</div>
+            <div class="history-meta">
+              ${h.name || ""} &middot; ${h.zone || ""}<br>${date}
+              ${h.labels ? `<br>Labels: ${h.labels}` : ""}
+            </div>
+          </div>`;
+      }).join("");
+    } catch (e) {
+      document.getElementById("history-list").innerHTML = `<div class="empty">Failed to load history.</div>`;
+    }
+  }
+
+  // ── Render ───────────────────────────────────────────────────────────────
+  const badgeClass = {
+    AC: "badge-AC", Control: "badge-Control", DC: "badge-DC",
+    Modbus: "badge-Modbus", MV: "badge-MV"
+  };
+
+  function getCheckout(packet) {
+    return checkoutsData.find(c => c.packet === packet && c.zone === activeZone) || null;
   }
 
   function render() {
-    const query  = searchEl.value.toLowerCase().trim();
-    const system = filterEl.value;
+    const query  = document.getElementById("search").value.toLowerCase().trim();
+    const system = document.getElementById("filter").value;
 
-    const filtered = DATA.filter(item => {
-      const matchesSearch =
-        !query ||
-        item.source.toLowerCase().includes(query) ||
-        item.dest.toLowerCase().includes(query) ||
-        item.packet.toLowerCase().includes(query);
-      const matchesSystem = !system || item.system === system;
-      const matchesZone   = item.zone === activeZone;
-      return matchesSearch && matchesSystem && matchesZone;
+    const filtered = equipmentData.filter(item => {
+      const matchSearch = !query ||
+        (item.source && item.source.toLowerCase().includes(query)) ||
+        (item.dest   && item.dest.toLowerCase().includes(query))   ||
+        (item.packet && item.packet.toLowerCase().includes(query));
+      const matchSystem = !system || item.system === system;
+      return matchSearch && matchSystem;
     });
 
-    countEl.textContent = `${filtered.length} of ${DATA.length} results`;
+    document.getElementById("results-count").textContent =
+      `${filtered.length} of ${equipmentData.length} results`;
 
-    if (filtered.length === 0) {
-      listEl.innerHTML = `<div class="empty">No matching equipment in this zone.</div>`;
+    if (!filtered.length) {
+      document.getElementById("list").innerHTML = `<div class="empty">No results found.</div>`;
       return;
     }
 
-    listEl.innerHTML = filtered.map(item => `
-      <div class="card">
-        <div class="drawer">
-          <span class="drawer-label">Drawer</span>
-          <span class="drawer-number">${esc(item.drawer)}</span>
-        </div>
-        <div class="body">
-          <div class="conn-head">
-            <div class="conn">
-              <span class="conn-tag">From</span>
-              <span class="conn-from">${esc(item.source)}</span>
-              <span class="conn-tag">To</span>
-              <span class="conn-to">${esc(item.dest)}</span>
+    document.getElementById("list").innerHTML = filtered.map(item => {
+      const co = item.packet ? getCheckout(item.packet) : null;
+      const statusHtml = co
+        ? `<span class="status-badge status-checkedout">Out: ${co.checkedOutBy}</span>`
+        : `<span class="status-badge status-available">Available</span>`;
+
+      const safeItem = encodeURIComponent(JSON.stringify(item));
+      return `
+        <div class="card" onclick="openModal(decodeURIComponent('${safeItem}'))">
+          <div class="card-top">
+            <div class="card-identifiers">
+              <div class="drawer-block">
+                <span class="block-label">Drawer</span>
+                <span class="drawer-number">${item.drawer || "–"}</span>
+              </div>
+              <div class="packet-block">
+                <span class="block-label">Packet</span>
+                <span class="packet-name">${item.packet || "–"}</span>
+              </div>
             </div>
-            <span class="badge ${badgeClass[item.system] || ''}">${esc(item.system)}</span>
+            <div class="card-body">
+              <div class="equip-row">
+                <span class="equip-label">Source</span>
+                <span class="equip-name">${item.source || "–"}</span>
+              </div>
+              <div class="equip-row">
+                <span class="equip-label">Destination</span>
+                <span class="equip-dest">${item.dest || "–"}</span>
+              </div>
+            </div>
           </div>
-          <div class="packet">
-            <span class="packet-tag">Packet</span>
-            <span class="packet-name">${esc(item.packet)}</span>
+          <div class="card-footer">
+            <span class="badge ${badgeClass[item.system] || ""}">${item.system || ""}</span>
+            ${statusHtml}
           </div>
-        </div>
-      </div>
-    `).join("");
+        </div>`;
+    }).join("");
   }
 
-  searchEl.addEventListener("input", render);
-  filterEl.addEventListener("change", render);
+  // ── Modal ────────────────────────────────────────────────────────────────
+  function openModal(itemJson) {
+    const item   = typeof itemJson === "string" ? JSON.parse(itemJson) : itemJson;
+    const packet = item.packet || "";
+    const co     = packet ? getCheckout(packet) : null;
 
-  render();
+    // All labels (entries) sharing this packet in current zone
+    const labels = packet
+      ? equipmentData.filter(e => e.packet === packet)
+      : [item];
+
+    currentModal = { packet, zone: activeZone, isCheckedOut: !!co, checkoutInfo: co };
+
+    document.getElementById("modal-title").textContent    = packet || `${item.source} → ${item.dest}`;
+    document.getElementById("modal-subtitle").textContent = `Drawer ${item.drawer || "–"} · ${activeZone}`;
+
+    const infoEl = document.getElementById("checkout-info");
+    if (co) {
+      const date = co.checkedOutAt ? new Date(co.checkedOutAt).toLocaleString() : "";
+      infoEl.innerHTML =
+        `<div class="checkout-info">Checked out by <strong>${co.checkedOutBy}</strong>${date ? " on " + date : ""}</div>`;
+    } else {
+      infoEl.innerHTML = "";
+    }
+
+    document.getElementById("label-list").innerHTML = labels.map((l, i) => `
+      <label class="label-item">
+        <input type="checkbox" id="lbl-${i}" value="${(l.source || "") + " → " + (l.dest || "")}" checked />
+        <div class="label-item-text">
+          <div class="label-source">${l.source || "–"}</div>
+          <div class="label-dest">${l.dest || "–"}</div>
+        </div>
+      </label>`).join("");
+
+    const btn = document.getElementById("btn-action");
+    if (co) {
+      btn.textContent = "Check In";
+      btn.className   = "btn btn-checkin";
+    } else {
+      btn.textContent = "Check Out";
+      btn.className   = "btn btn-checkout";
+    }
+
+    document.getElementById("name-input").value = "";
+    document.getElementById("modal-overlay").classList.add("active");
+  }
+
+  function closeModal() {
+    document.getElementById("modal-overlay").classList.remove("active");
+    currentModal = null;
+  }
+
+  function closeModalOnOverlay(e) {
+    if (e.target === document.getElementById("modal-overlay")) closeModal();
+  }
+
+  async function submitAction() {
+    const name = document.getElementById("name-input").value.trim();
+    if (!name) { alert("Please enter your name."); return; }
+
+    const selected = Array.from(
+      document.querySelectorAll("#label-list input[type='checkbox']:checked")
+    ).map(cb => cb.value);
+
+    if (!selected.length) { alert("Please select at least one label."); return; }
+
+    const btn = document.getElementById("btn-action");
+    btn.textContent = "Saving...";
+    btn.disabled    = true;
+
+    try {
+      await apiFetch({
+        action:  currentModal.isCheckedOut ? "checkin" : "checkout",
+        packet:  currentModal.packet,
+        labels:  selected,
+        name,
+        zone:    currentModal.zone
+      });
+      closeModal();
+      await loadEquipment();
+    } catch (err) {
+      alert("Something went wrong. Please try again.");
+      btn.textContent = currentModal.isCheckedOut ? "Check In" : "Check Out";
+      btn.disabled    = false;
+    }
+  }
+
+  // ── View switching ───────────────────────────────────────────────────────
+  function showHistory() {
+    document.getElementById("view-main").classList.remove("active");
+    document.getElementById("view-history").classList.add("active");
+    loadHistory();
+  }
+
+  function showMain() {
+    document.getElementById("view-history").classList.remove("active");
+    document.getElementById("view-main").classList.add("active");
+  }
+
+  // ── Init ─────────────────────────────────────────────────────────────────
+  loadEquipment();
 </script>
 
 </body>
