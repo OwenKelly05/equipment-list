@@ -866,13 +866,42 @@
         : (totalCount > 0 ? `<span class="partial-badge" style="background:#e0e7ff;color:#3730a3">Full</span>` : "");
 
       // Show Check In only if this specific checkout record is still active
-      // Match by packet + zone + timestamp + name
-      const currentCoRecord = checkoutsData.find(c =>
-        c.packet       === h.packet &&
-        c.zone         === h.zone   &&
-        c.checkedOutBy === h.name   &&
-        tsMatch(c.checkedOutAt, h.timestamp)
+      // Match by packet + zone + name + timestamp.
+      // Uses 3-tier fallback to handle Google Sheets timestamp format differences
+      // (ms truncation, timezone shifts, etc.)
+      function tsClose(a, b) {
+        if (!a && !b) return true;
+        if (String(a) === String(b)) return true;
+        try { return Math.abs(new Date(String(a)) - new Date(String(b))) < 10000; } catch { return false; }
+      }
+
+      // Tier 1: exact match
+      let currentCoRecord = checkoutsData.find(c =>
+        c.packet === h.packet &&
+        c.zone   === h.zone   &&
+        String(c.checkedOutBy||"").trim() === String(h.name||"").trim() &&
+        String(c.checkedOutAt||"")        === String(h.timestamp||"")
       );
+
+      // Tier 2: fuzzy timestamp (handles ms truncation / timezone shifts up to 10s)
+      if (!currentCoRecord) {
+        currentCoRecord = checkoutsData.find(c =>
+          c.packet === h.packet &&
+          c.zone   === h.zone   &&
+          String(c.checkedOutBy||"").trim() === String(h.name||"").trim() &&
+          tsClose(c.checkedOutAt, h.timestamp)
+        );
+      }
+
+      // Tier 3: name + zone only (if timestamp was mangled beyond recognition)
+      if (!currentCoRecord) {
+        currentCoRecord = checkoutsData.find(c =>
+          c.packet === h.packet &&
+          c.zone   === h.zone   &&
+          String(c.checkedOutBy||"").trim() === String(h.name||"").trim()
+        );
+      }
+
       const stillOut = isOut && !!currentCoRecord;
 
       // Use CURRENT remaining labels from Checkouts (not original history labels)
