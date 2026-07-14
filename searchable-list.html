@@ -295,6 +295,7 @@
   <div class="history-header">
     <button class="back-btn" onclick="showMain()">&#8592; Back</button>
     <h1>Checkout History</h1>
+    <button class="refresh-btn" id="refresh-btn-history" onclick="forceRefresh()" style="margin-left:auto">&#8635;</button>
   </div>
   <div class="history-zone-filter">
     <button class="hz-btn active" data-hzone="all"        onclick="setHistoryZone(this)">All</button>
@@ -418,13 +419,20 @@
   async function forceRefresh() {
     const btn = document.getElementById("refresh-btn");
     btn.classList.add("spinning");
+    const onHistory = document.getElementById("view-history").classList.contains("active");
     try {
-      const [zoneData, coRes] = await Promise.all([fetchAllZones(true), apiFetch({ action: "getCheckouts" })]);
-      allZoneData   = zoneData;
-      checkoutsData = coRes.data || [];
-      saveCache(zoneData);
-      render();
-    } catch { alert("Refresh failed."); }
+      if (onHistory) {
+        // On history page -- refresh checkouts + history + keep main list in sync
+        await loadHistory();
+      } else {
+        // On main page -- refresh equipment (bypass cache) + checkouts + render
+        const [zoneData, coRes] = await Promise.all([fetchAllZones(true), apiFetch({ action: "getCheckouts" })]);
+        allZoneData   = zoneData;
+        checkoutsData = coRes.data || [];
+        saveCache(zoneData);
+        render();
+      }
+    } catch { alert("Refresh failed. Check your connection."); }
     finally { btn.classList.remove("spinning"); }
   }
 
@@ -764,7 +772,7 @@
       const coRes   = await apiFetch({ action: "getCheckouts" });
       checkoutsData = coRes.data || [];
       render();
-      if (saved.fromHistory) loadHistory();
+      if (saved.fromHistory) await loadHistory();
     } catch {
       try { const coRes = await apiFetch({ action: "getCheckouts" }); checkoutsData = coRes.data || []; } catch {}
       render();
@@ -876,6 +884,7 @@
       checkoutsData = coRes.data || [];
       _historyData  = (histRes.data || []).slice().reverse();
       renderHistory();
+      render(); // Keep main list in sync whenever checkoutsData is refreshed
     } catch {
       document.getElementById("history-list").innerHTML = `<div class="empty">Failed to load history.</div>`;
     }
@@ -904,6 +913,7 @@
   function showMain() {
     document.getElementById("view-history").classList.remove("active");
     document.getElementById("view-main").classList.add("active");
+    render(); // Always re-render with latest checkoutsData when switching back
   }
 
   init();
