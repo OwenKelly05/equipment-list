@@ -451,6 +451,16 @@
     return tokens.every(t => hay.includes(t));
   }
 
+  // ── Timestamp comparison (handles Google Sheets date format variations) ────
+  function tsMatch(ts1, ts2) {
+    if (!ts1 && !ts2) return true;
+    if (!ts1 || !ts2) return false;
+    if (String(ts1) === String(ts2)) return true; // exact string match
+    const d1 = new Date(ts1).getTime();
+    const d2 = new Date(ts2).getTime();
+    return !isNaN(d1) && !isNaN(d2) && Math.abs(d1 - d2) < 5000; // 5-second tolerance
+  }
+
   // ── Checkout data helpers ─────────────────────────────────────────────────
 
   // Get all active checkout records for a packet+zone
@@ -731,9 +741,9 @@
     if (saved.isCheckedOut) {
       // Check-in: update or remove the matching record
       const coIdx = checkoutsData.findIndex(c =>
-        c.packet       === saved.packet &&
-        c.zone         === saved.zone   &&
-        c.checkedOutAt === saved.timestamp
+        c.packet === saved.packet &&
+        c.zone   === saved.zone   &&
+        tsMatch(c.checkedOutAt, saved.timestamp)
       );
       if (coIdx > -1) {
         const currentLabels = checkoutsData[coIdx].labels
@@ -861,7 +871,7 @@
         c.packet       === h.packet &&
         c.zone         === h.zone   &&
         c.checkedOutBy === h.name   &&
-        c.checkedOutAt === h.timestamp
+        tsMatch(c.checkedOutAt, h.timestamp)
       );
       const stillOut = isOut && !!currentCoRecord;
 
