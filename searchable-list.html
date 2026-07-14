@@ -820,6 +820,13 @@
   }
 
   // ── History ───────────────────────────────────────────────────────────────
+  // Fuzzy timestamp comparison -- handles Google Sheets ms truncation & timezone shifts
+  function tsClose(a, b) {
+    if (!a && !b) return true;
+    if (String(a) === String(b)) return true;
+    try { return Math.abs(new Date(String(a)) - new Date(String(b))) < 10000; } catch { return false; }
+  }
+
   function setHistoryZone(btn) {
     historyZoneFilter = btn.dataset.hzone;
     document.querySelectorAll(".hz-btn").forEach(b => b.classList.remove("active"));
@@ -867,13 +874,7 @@
 
       // Show Check In only if this specific checkout record is still active
       // Match by packet + zone + name + timestamp.
-      // Uses 3-tier fallback to handle Google Sheets timestamp format differences
-      // (ms truncation, timezone shifts, etc.)
-      function tsClose(a, b) {
-        if (!a && !b) return true;
-        if (String(a) === String(b)) return true;
-        try { return Math.abs(new Date(String(a)) - new Date(String(b))) < 10000; } catch { return false; }
-      }
+      // Uses 3-tier fallback (see tsClose defined at module level)
 
       // Tier 1: exact match
       let currentCoRecord = checkoutsData.find(c =>
