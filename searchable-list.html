@@ -210,7 +210,16 @@
     .back-btn { background: #2e2e4a; border: none; color: #aaa; padding: 7px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
     .history-header h1 { font-size: 17px; font-weight: 700; }
 
-    .history-zone-filter { display: flex; background: #1a1a2e; padding: 0 12px 10px; }
+    .history-zone-filter { display: flex; background: #1a1a2e; padding: 0 12px 8px; }
+
+    .history-search-wrap { background: #1a1a2e; padding: 0 12px 10px; }
+    .history-search-wrap input {
+      width: 100%; padding: 9px 11px; border: none;
+      border-radius: 8px; font-size: 14px;
+      background: #2e2e4a; color: #fff; outline: none;
+      -webkit-appearance: none;
+    }
+    .history-search-wrap input::placeholder { color: #888aaa; }
     .hz-btn {
       flex: 1; padding: 8px 4px; border: none;
       background: #2e2e4a; color: #888aaa;
@@ -292,6 +301,12 @@
     <button class="hz-btn"        data-hzone="EYD Zone 1" onclick="setHistoryZone(this)">EYD Z1</button>
     <button class="hz-btn"        data-hzone="EYD Zone 2" onclick="setHistoryZone(this)">EYD Z2</button>
     <button class="hz-btn"        data-hzone="MYD"        onclick="setHistoryZone(this)">MYD</button>
+  </div>
+  <div class="history-search-wrap">
+    <input type="text" id="history-search"
+      placeholder="Search packet, source, dest, name, or date..."
+      autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+      oninput="renderHistory()" />
   </div>
   <div class="history-list" id="history-list"></div>
 </div>
@@ -763,13 +778,28 @@
     historyZoneFilter = btn.dataset.hzone;
     document.querySelectorAll(".hz-btn").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
+    const s = document.getElementById("history-search");
+    if (s) s.value = "";
     renderHistory();
   }
 
   function renderHistory() {
-    const filtered = historyZoneFilter === "all"
+    const searchEl = document.getElementById("history-search");
+    const query    = searchEl ? searchEl.value.trim().toLowerCase() : "";
+
+    const zoneFiltered = historyZoneFilter === "all"
       ? _historyData
       : _historyData.filter(h => h.zone === historyZoneFilter);
+
+    const filtered = !query ? zoneFiltered : zoneFiltered.filter(h => {
+      const date     = h.timestamp ? new Date(h.timestamp).toLocaleString().toLowerCase() : "";
+      const labels   = (h.labels || "").toLowerCase();
+      const packet   = (h.packet || "").toLowerCase();
+      const name     = (h.name   || "").toLowerCase();
+      const tokens   = query.split(/\s+/).filter(Boolean);
+      const haystack = `${packet} ${labels} ${name} ${date}`;
+      return tokens.every(t => haystack.includes(t));
+    });
 
     if (!filtered.length) {
       document.getElementById("history-list").innerHTML = `<div class="empty">No history${historyZoneFilter !== "all" ? " for this zone" : ""} yet.</div>`;
