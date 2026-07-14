@@ -384,14 +384,7 @@
     const p = {};
     for (const [k, v] of Object.entries(params)) p[k] = Array.isArray(v) ? JSON.stringify(v) : v;
     const res = await fetch(SCRIPT_URL + "?" + new URLSearchParams(p).toString());
-    try {
-      return await res.json();
-    } catch {
-      // Apps Script sometimes returns a redirect/HTML page instead of JSON
-      // (usually after the action already completed on the server).
-      // Return a neutral object so callers can continue without throwing.
-      return { _nonJson: true };
-    }
+    return res.json();
   }
 
   async function fetchAllZones(nocache) {
