@@ -401,7 +401,16 @@
       allZoneData = cached;
       apiFetch({ action: "getCheckouts" }).then(r => { checkoutsData = r.data || []; render(); });
       render();
-      fetchAllZones().then(fresh => { allZoneData = fresh; saveCache(fresh); render(); }).catch(() => {});
+      // Background refresh -- only update if we actually got data back.
+      // If the server returns empty (e.g. cache error), keep the localStorage data.
+      fetchAllZones().then(fresh => {
+        const hasData = Object.values(fresh).some(arr => arr && arr.length > 0);
+        if (hasData) {
+          allZoneData = fresh;
+          saveCache(fresh);
+          render();
+        }
+      }).catch(() => {});
       return;
     }
     document.getElementById("list").innerHTML = `<div class="loading">Loading...</div>`;
